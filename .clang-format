@@ -1,0 +1,13 @@
+﻿---
+BasedOnStyle: Google
+AccessModifierOffset: '-2'
+AlignAfterOpenBracket: Align
+AlignConsecutiveMacros: 'true'
+AlignConsecutiveAssignments: 'false'
+AlignConsecutiveDeclarations: 'false'
+AlignEscapedNewlines: Left
+AlignOperands: 'true'
+AllowAllConstructorInitializersOnNextLine: 'true'
+BreakBeforeBraces: Linux
+BreakConstructorInitializers: BeforeColon
+...
