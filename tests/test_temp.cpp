@@ -1,5 +1,7 @@
 #include <QtTest/QtTest>
 
+#include "main_window.hpp"
+
 class TestTemp : public QObject
 {
   Q_OBJECT
@@ -7,7 +9,9 @@ class TestTemp : public QObject
 private slots:
   void Test()
   {
-    QVERIFY(1 == 1);
+    MainWindow w;
+    w.show();
+    QVERIFY(!w.isHidden());
   }
 };
 
