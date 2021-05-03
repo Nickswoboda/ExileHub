@@ -33,3 +33,5 @@ else()
 endif()
 
 target_link_libraries(ExileHub PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+
+add_subdirectory(tests)
