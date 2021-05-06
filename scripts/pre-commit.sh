@@ -23,4 +23,7 @@ if [ -n "${FILES_SRC}" ]; then
 else
     echo No files to analyze
 fi
-exit 0
+
+scripts/unit-tests.sh
+
+exit $?
