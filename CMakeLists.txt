@@ -32,6 +32,12 @@ else()
 
 endif()
 
-target_link_libraries(ExileHub PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-
 add_subdirectory(tests)
+
+option(BUILD_SHARED_LIBS "" OFF)
+set(QUAZIP_QT_MAJOR_VERSION 6 CACHE STRING "Overridden to 6")
+add_subdirectory(dependencies/quazip)
+
+target_link_libraries(ExileHub PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(ExileHub PRIVATE QuaZip::QuaZip)
+

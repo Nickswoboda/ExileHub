@@ -1,0 +1,3 @@
+[submodule "dependencies/quazip"]
+	path = dependencies/quazip
+	url = https://github.com/stachenov/quazip.git
