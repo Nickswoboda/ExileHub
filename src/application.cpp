@@ -10,17 +10,17 @@
 
 #include "quazip/JlCompress.h"
 
-Application::Application(int &argc, char **argv) : QApplication(argc, argv)
+Application::Application(int& argc, char** argv) : QApplication(argc, argv)
 {
   qDebug() << version_;
   main_window_.show();
 
-  // if (QDir("temp").exists()){
-  // QDir("temp").removeRecursively();
-  //}
+  if (QDir("temp").exists()) {
+    QDir("temp").removeRecursively();
+  }
 
-  connect(&network_manager_, SIGNAL(finished(QNetworkReply *)), this,
-          SLOT(OnNetworkRequestFinished(QNetworkReply *)));
+  connect(&network_manager_, SIGNAL(finished(QNetworkReply*)), this,
+          SLOT(OnNetworkRequestFinished(QNetworkReply*)));
 
   QUrl app_releases_url(
       "https://api.github.com/repos/nickswoboda/ExileHub/releases/latest");
@@ -28,7 +28,7 @@ Application::Application(int &argc, char **argv) : QApplication(argc, argv)
   network_manager_.get(request);
 }
 
-void Application::CheckLatestRelease(QNetworkReply *reply)
+void Application::CheckLatestRelease(QNetworkReply* reply)
 {
   auto json_doc = QJsonDocument::fromJson(reply->readAll());
   auto json_obj = json_doc.object();
@@ -73,7 +73,7 @@ void Application::CheckLatestRelease(QNetworkReply *reply)
   reply->deleteLater();
 }
 
-void Application::OnNetworkRequestFinished(QNetworkReply *reply)
+void Application::OnNetworkRequestFinished(QNetworkReply* reply)
 {
   if (reply->error()) {
     qDebug() << reply->errorString();
