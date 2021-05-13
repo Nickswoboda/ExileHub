@@ -11,4 +11,7 @@ AllowAllConstructorInitializersOnNextLine: 'true'
 AllowShortFunctionsOnASingleLine: Inline
 BreakBeforeBraces: Linux
 BreakConstructorInitializers: BeforeColon
+DerivePointerAlignment: false
+PointerAlignment: Left
+PointerBindsToType: true
 ...
