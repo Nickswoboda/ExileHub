@@ -17,6 +17,8 @@ private:
   QString version_ = "v1.0.0";
   QNetworkAccessManager network_manager_;
 
+  void CheckLatestRelease(QNetworkReply* reply);
+
 private slots:
   void OnNetworkRequestFinished(QNetworkReply* reply);
 };
