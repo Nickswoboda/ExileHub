@@ -15,26 +15,46 @@ Application::Application(int& argc, char** argv) : QApplication(argc, argv)
   qDebug() << version_;
   main_window_.show();
 
-  if (QDir("temp").exists()) {
-    QDir("temp").removeRecursively();
-  }
+  QDir("temp").removeRecursively();
 
-  connect(&network_manager_, SIGNAL(finished(QNetworkReply*)), this,
-          SLOT(OnNetworkRequestFinished(QNetworkReply*)));
+  RequestLatestRelease();
+}
 
+void Application::RequestLatestRelease()
+{
   QUrl app_releases_url(
       "https://api.github.com/repos/nickswoboda/ExileHub/releases/latest");
   QNetworkRequest request(app_releases_url);
-  network_manager_.get(request);
+  QNetworkReply* reply = network_manager_.get(request);
+  connect(reply, SIGNAL(finished()), this, SLOT(CheckLatestRelease()));
 }
 
-void Application::CheckLatestRelease(QNetworkReply* reply)
+void Application::RequestAssetZipData(int asset_id)
 {
+  QUrl asset_url(
+      "https://api.github.com/repos/nickswoboda/ExileHub/releases/assets/" +
+      QString::number(asset_id));
+  QNetworkRequest request(asset_url);
+  request.setRawHeader("Accept", "application/octet-stream");
+  QNetworkReply* reply = network_manager_.get(request);
+  connect(reply, SIGNAL(finished()), this, SLOT(ExtractAssetZipData()));
+}
+
+void Application::CheckLatestRelease()
+{
+  auto reply = dynamic_cast<QNetworkReply*>(sender());
+  reply->deleteLater();
+  if (reply->error()) {
+    qDebug() << reply->errorString();
+    qDebug() << reply->readAll();
+    return;
+  }
+
   auto json_doc = QJsonDocument::fromJson(reply->readAll());
   auto json_obj = json_doc.object();
-
   if (!json_obj.contains("name")) {
     qDebug() << "No releases found.";
+    return;
   }
 
   QString latest_version = json_obj["name"].toString();
@@ -43,46 +63,28 @@ void Application::CheckLatestRelease(QNetworkReply* reply)
     return;
   }
 
+  QJsonArray assets = json_obj["assets"].toArray();
+  if (assets.empty()) {
+    qDebug() << "No release assets found.";
+    return;
+  }
+
   auto result = QMessageBox::question(
       &main_window_, "Update Available",
       "A new update is available. Would you like to download it?");
-
-  if (result == QMessageBox::No) {
-    return;
+  if (result == QMessageBox::Yes) {
+    int asset_id = assets[0].toObject()["id"].toInt();
+    RequestAssetZipData(asset_id);
   }
-
-  QJsonArray assets = json_obj["assets"].toArray();
-  if (assets.empty()) {
-    qDebug() << "No release assets found";
-    return;
-  }
-
-  if (assets.size() > 1) {
-    qDebug() << "Multiple release assets found.";
-    // TODO: figure out solution for multiple assets
-  }
-
-  int asset_id = assets[0].toObject()["id"].toInt();
-  QUrl asset_url(
-      "https://api.github.com/repos/nickswoboda/ExileHub/releases/assets/" +
-      QString::number(asset_id));
-  QNetworkRequest request(asset_url);
-  request.setRawHeader("Accept", "application/octet-stream");
-  network_manager_.get(request);
-
-  reply->deleteLater();
 }
 
-void Application::OnNetworkRequestFinished(QNetworkReply* reply)
+void Application::ExtractAssetZipData()
 {
+  auto reply = dynamic_cast<QNetworkReply*>(sender());
+  reply->deleteLater();
   if (reply->error()) {
     qDebug() << reply->errorString();
     qDebug() << reply->readAll();
-    return;
-  }
-
-  if (reply->url().toString().endsWith("latest")) {
-    CheckLatestRelease(reply);
     return;
   }
 
@@ -98,7 +100,7 @@ void Application::OnNetworkRequestFinished(QNetworkReply* reply)
 
   auto list = JlCompress::extractDir(file.fileName(), "temp");
   if (list.empty()) {
-    qDebug() << "Zip extraction failed";
+    qDebug() << "Zip extraction failed.";
     return;
   }
 
@@ -122,6 +124,4 @@ void Application::OnNetworkRequestFinished(QNetworkReply* reply)
       quit();
     }
   }
-
-  reply->deleteLater();
 }

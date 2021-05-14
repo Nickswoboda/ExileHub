@@ -17,8 +17,10 @@ private:
   QString version_ = "v1.0.0";
   QNetworkAccessManager network_manager_;
 
-  void CheckLatestRelease(QNetworkReply* reply);
+  void RequestLatestRelease();
+  void RequestAssetZipData(int asset_id);
 
 private slots:
-  void OnNetworkRequestFinished(QNetworkReply* reply);
+  void CheckLatestRelease();
+  void ExtractAssetZipData();
 };
