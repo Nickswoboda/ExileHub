@@ -21,6 +21,8 @@ set(PROJECT_SOURCES
         src/main_window.cpp
         src/main_window.hpp
         src/main_window.ui
+        src/auto_updater.cpp
+        src/auto_updater.hpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QApplication>
-#include <QtNetwork/QNetworkAccessManager>
 
+#include "auto_updater.hpp"
 #include "main_window.hpp"
 
 class Application : public QApplication
@@ -15,12 +15,9 @@ public:
 private:
   MainWindow main_window_;
   QString version_ = "v1.0.0";
-  QNetworkAccessManager network_manager_;
-
-  void RequestLatestRelease();
-  void RequestAssetZipData(int asset_id);
+  AutoUpdater auto_updater_;
 
 private slots:
-  void CheckLatestRelease();
-  void ExtractAssetZipData();
+  void OnUpdateAvailable(int asset_id);
+  void OnUpdateComplete();
 };
