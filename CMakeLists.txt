@@ -23,6 +23,8 @@ set(PROJECT_SOURCES
         src/main_window.ui
         src/auto_updater.cpp
         src/auto_updater.hpp
+        src/system_tray.cpp
+        src/system_tray.hpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

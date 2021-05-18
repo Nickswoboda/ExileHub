@@ -2,6 +2,8 @@
 
 #include <QMainWindow>
 
+#include "system_tray.hpp"
+
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
@@ -18,5 +20,12 @@ public:
   ~MainWindow();
 
 private:
+  void changeEvent(QEvent* event) override;
+
+  SystemTray system_tray_;
   Ui::Application* ui;
+
+public slots:
+  void OnSystemTrayActivated(QSystemTrayIcon::ActivationReason reason);
+  void RestoreFromSystemTray();
 };
