@@ -9,6 +9,9 @@ MainWindow::MainWindow(QWidget* parent)
 {
   ui->setupUi(this);
 
+  setWindowIcon(QIcon(":/assets/icon.png"));
+  setWindowTitle("ExileHub");
+
   connect(&system_tray_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
           this, SLOT(OnSystemTrayActivated(QSystemTrayIcon::ActivationReason)));
 }
