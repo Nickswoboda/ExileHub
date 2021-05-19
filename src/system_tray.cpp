@@ -5,7 +5,7 @@
 
 SystemTray::SystemTray(QObject* parent) : QSystemTrayIcon(parent)
 {
-  icon_.addFile("C:/dev/ExileHub/assets/icon.png");
+  icon_.addFile(":/assets/icon.png");
   setIcon(icon_);
   context_menu_.addAction("Restore", parent, SLOT(RestoreFromSystemTray()));
   context_menu_.addAction("Quit", qApp, SLOT(quit()));

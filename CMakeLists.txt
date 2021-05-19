@@ -25,6 +25,7 @@ set(PROJECT_SOURCES
         src/auto_updater.hpp
         src/system_tray.cpp
         src/system_tray.hpp
+        assets/assets.qrc
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
