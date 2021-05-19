@@ -24,8 +24,4 @@ private:
 
   SystemTray system_tray_;
   Ui::Application* ui;
-
-public slots:
-  void OnSystemTrayActivated(QSystemTrayIcon::ActivationReason reason);
-  void RestoreFromSystemTray();
 };

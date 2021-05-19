@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QAction>
 #include <QMenu>
 #include <QSystemTrayIcon>
 
@@ -13,4 +12,8 @@ public:
 private:
   QMenu context_menu_;
   QIcon icon_;
+
+private slots:
+  void OnActivated(QSystemTrayIcon::ActivationReason reason);
+  void RestoreMainWindow();
 };
