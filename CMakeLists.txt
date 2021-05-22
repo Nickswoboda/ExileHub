@@ -23,8 +23,8 @@ set(PROJECT_SOURCES
         src/main_window.ui
         src/auto_updater.cpp
         src/auto_updater.hpp
-        src/system_tray.cpp
-        src/system_tray.hpp
+        src/tray_icon.cpp
+        src/tray_icon.hpp
         assets/assets.qrc
 )
 

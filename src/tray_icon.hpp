@@ -3,17 +3,19 @@
 #include <QMenu>
 #include <QSystemTrayIcon>
 
-class SystemTray : public QSystemTrayIcon
+#include "main_window.hpp"
+
+class TrayIcon : public QSystemTrayIcon
 {
   Q_OBJECT
 public:
-  explicit SystemTray(QObject* parent = nullptr);
+  explicit TrayIcon(MainWindow& window);
 
 private:
   QMenu context_menu_;
-  QIcon icon_;
 
 private slots:
   void OnActivated(QSystemTrayIcon::ActivationReason reason);
-  void RestoreMainWindow();
+  void RestoreWindow();
+  void OnWindowMinimized();
 };
