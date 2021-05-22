@@ -61,4 +61,4 @@ private slots:
 };
 
 QTEST_MAIN(AutoUpdateTest)
-#include "test_auto_update.moc"
+#include "auto_update_test.moc"

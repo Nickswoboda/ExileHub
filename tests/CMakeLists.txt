@@ -10,7 +10,7 @@ set(CMAKE_AUTOMOC ON)
 
 enable_testing(true)
 
-qt_add_executable(auto_update_test test_auto_update.cpp ../src/auto_updater.cpp)
+qt_add_executable(auto_update_test auto_update_test.cpp ../src/auto_updater.cpp)
 target_include_directories(auto_update_test PUBLIC ../src)
 target_link_libraries(auto_update_test PRIVATE Qt${QT_VERSION_MAJOR}::Test Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(auto_update_test PRIVATE Qt${QT_VERSION_MAJOR}::Network QuaZip::QuaZip)
