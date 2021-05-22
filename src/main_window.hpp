@@ -2,8 +2,6 @@
 
 #include <QMainWindow>
 
-#include "system_tray.hpp"
-
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
@@ -15,6 +13,10 @@ class MainWindow : public QMainWindow
 {
   Q_OBJECT
 
+signals:
+  // emitted to notify SystemTray to show
+  void Minimized();
+
 public:
   MainWindow(QWidget* parent = nullptr);
   ~MainWindow();
@@ -22,6 +24,5 @@ public:
 private:
   void changeEvent(QEvent* event) override;
 
-  SystemTray system_tray_;
   Ui::Application* ui;
 };

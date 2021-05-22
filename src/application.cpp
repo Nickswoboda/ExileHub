@@ -5,7 +5,8 @@
 
 #include "quazip/JlCompress.h"
 
-Application::Application(int& argc, char** argv) : QApplication(argc, argv)
+Application::Application(int& argc, char** argv)
+    : QApplication(argc, argv), system_tray_(main_window_)
 {
   qDebug() << version_;
   main_window_.show();
