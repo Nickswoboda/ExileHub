@@ -15,11 +15,15 @@ class MainWindow : public QMainWindow
 
 signals:
   // emitted to notify SystemTray to show
-  void Minimized();
+  void MinimizeToTrayRequested();
+  void UpdateCheckRequested();
 
 public:
   MainWindow(QWidget* parent = nullptr);
   ~MainWindow();
+
+private slots:
+  void OnOptionsActionTriggered();
 
 private:
   void changeEvent(QEvent* event) override;

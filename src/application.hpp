@@ -18,9 +18,8 @@ private:
   TrayIcon system_tray_;
   AutoUpdater auto_updater_;
 
-  QString version_ = "v1.0.0";
-
 private slots:
   void OnUpdateAvailable(int asset_id);
   void OnUpdateComplete();
+  void CheckForNewAppUpdates();
 };

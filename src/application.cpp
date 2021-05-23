@@ -2,21 +2,30 @@
 
 #include <QMessageBox>
 #include <QProcess>
+#include <QSettings>
 
 #include "quazip/JlCompress.h"
 
 Application::Application(int& argc, char** argv)
     : QApplication(argc, argv), system_tray_(main_window_)
 {
-  qDebug() << version_;
+  setOrganizationName("ExileHub");
+  setApplicationName("ExileHub");
+  setApplicationVersion("v1.0.0");
+
   main_window_.show();
 
   connect(&auto_updater_, SIGNAL(UpdateAvailable(int)), this,
           SLOT(OnUpdateAvailable(int)));
   connect(&auto_updater_, SIGNAL(UpdateComplete()), this,
           SLOT(OnUpdateComplete()));
+  connect(&main_window_, SIGNAL(UpdateCheckRequested()), this,
+          SLOT(CheckForNewAppUpdates()));
 
-  auto_updater_.CheckForNewRelease(version_);
+  QSettings settings;
+  if (settings.value("options/auto_update").toBool()) {
+    CheckForNewAppUpdates();
+  }
 }
 
 void Application::OnUpdateAvailable(int asset_id)
@@ -41,4 +50,9 @@ void Application::OnUpdateComplete()
       quit();
     }
   }
+}
+
+void Application::CheckForNewAppUpdates()
+{
+  auto_updater_.CheckForNewRelease(applicationVersion());
 }

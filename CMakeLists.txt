@@ -25,6 +25,9 @@ set(PROJECT_SOURCES
         src/auto_updater.hpp
         src/tray_icon.cpp
         src/tray_icon.hpp
+        src/options_dialog.cpp
+        src/options_dialog.hpp
+        src/options_dialog.ui
         assets/assets.qrc
 )
 
