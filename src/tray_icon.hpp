@@ -17,5 +17,5 @@ private:
 private slots:
   void OnActivated(QSystemTrayIcon::ActivationReason reason);
   void RestoreWindow();
-  void OnWindowMinimized();
+  void OnMinimizeToTrayRequested();
 };

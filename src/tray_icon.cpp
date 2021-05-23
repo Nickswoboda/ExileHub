@@ -11,7 +11,8 @@ TrayIcon::TrayIcon(MainWindow& window) : QSystemTrayIcon(&window)
   context_menu_.addAction("Quit", qApp, SLOT(quit()));
   setContextMenu(&context_menu_);
 
-  connect(&window, SIGNAL(Minimized()), this, SLOT(OnWindowMinimized()));
+  connect(&window, SIGNAL(MinimizeToTrayRequested()), this,
+          SLOT(OnMinimizeToTrayRequested()));
   connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
           SLOT(OnActivated(QSystemTrayIcon::ActivationReason)));
 }
@@ -25,13 +26,14 @@ void TrayIcon::OnActivated(QSystemTrayIcon::ActivationReason reason)
 
 void TrayIcon::RestoreWindow()
 {
-  auto window = dynamic_cast<QWidget*>(parent());
+  auto window = static_cast<QWidget*>(parent());
   window->showNormal();
   window->activateWindow();
   hide();
 }
 
-void TrayIcon::OnWindowMinimized()
+void TrayIcon::OnMinimizeToTrayRequested()
 {
   show();
+  static_cast<QWidget*>(parent())->hide();
 }
