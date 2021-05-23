@@ -16,7 +16,7 @@ target_link_libraries(auto_update_test PRIVATE Qt${QT_VERSION_MAJOR}::Test Qt${Q
 target_link_libraries(auto_update_test PRIVATE Qt${QT_VERSION_MAJOR}::Network QuaZip::QuaZip)
 add_test(NAME auto_update_test COMMAND auto_update_test)
 
-qt_add_executable(tray_icon_test tray_icon_test.cpp ../src/main_window.cpp ../src/tray_icon.cpp)
+qt_add_executable(tray_icon_test tray_icon_test.cpp ../src/main_window.cpp ../src/tray_icon.cpp ../src/options_dialog.cpp)
 target_include_directories(tray_icon_test PUBLIC ../src)
 target_link_libraries(tray_icon_test PRIVATE Qt${QT_VERSION_MAJOR}::Test Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(tray_icon_test PRIVATE Qt${QT_VERSION_MAJOR}::Network QuaZip::QuaZip)

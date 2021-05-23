@@ -1,8 +1,9 @@
 #include <QDir>
+#include <QSettings>
 #include <QSignalSpy>
 #include <QtTest/QtTest>
 
-#include "auto_updater.hpp"
+#include "application.hpp"
 
 class AutoUpdateTest : public QObject
 {

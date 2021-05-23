@@ -10,6 +10,9 @@ class SystemTrayTest : public QObject
 public:
   SystemTrayTest() : tray_icon_(window_)
   {
+    QGuiApplication::setOrganizationName("ExileHub-test");
+    QGuiApplication::setApplicationName("ExileHub-test");
+
     auto menu = tray_icon_.contextMenu();
     auto actions = menu->actions();
 
@@ -30,7 +33,16 @@ public:
 private slots:
   void TestMinimizeToSystemTray()
   {
+    QSettings settings;
+
+    settings.setValue("options/minimize_to_tray", false);
     window_.show();
+    window_.setWindowState(window_.windowState() | Qt::WindowMinimized);
+    QVERIFY(window_.isVisible());
+    QVERIFY(!tray_icon_.isVisible());
+
+    settings.setValue("options/minimize_to_tray", true);
+    window_.showNormal();
     window_.setWindowState(window_.windowState() | Qt::WindowMinimized);
     QVERIFY(!window_.isVisible());
     QVERIFY(tray_icon_.isVisible());
@@ -52,8 +64,6 @@ private slots:
 
     QVERIFY(window_.isVisible());
     QVERIFY(!tray_icon_.isVisible());
-
-    window_.setWindowState(window_.windowState() | Qt::WindowMinimized);
   }
 
   // Have not yet found a way to test quitting properly
