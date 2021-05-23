@@ -1,12 +1,9 @@
 #include "auto_updater.hpp"
 
-#include <QApplication>
 #include <QDir>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QMessageBox>
-#include <QProcess>
 #include <QtNetwork/QNetworkReply>
 
 #include "quazip/JlCompress.h"
