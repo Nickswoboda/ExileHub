@@ -11,6 +11,7 @@
 AutoUpdater::AutoUpdater()
 {
   QDir("temp").removeRecursively();
+  network_manager_.setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
 }
 
 void AutoUpdater::CheckForNewRelease(const QString& current_version)
