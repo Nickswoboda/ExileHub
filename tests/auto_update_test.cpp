@@ -45,14 +45,14 @@ private slots:
   void TestDownloadingRelease()
   {
     AutoUpdater auto_updater;
+    QFile::rename("auto_update_test.exe", "ExileHub.exe");
+
     auto_updater.DownloadRelease(asset_id_);
 
     QSignalSpy spy(&auto_updater, SIGNAL(UpdateComplete()));
     spy.wait();
 
     QCOMPARE(spy.count(), 1);
-
-    QFile::rename("test_auto_update.exe", "ExileHub.exe");
 
     QVERIFY(QDir("temp").exists());
     QVERIFY(QFile::exists("temp/ExileHub.zip"));
