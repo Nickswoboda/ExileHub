@@ -6,7 +6,7 @@
 #include "options_dialog.hpp"
 
 MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent), ui(new Ui::Application)
+    : QMainWindow(parent), ui(new Ui::Application), browser_(this)
 {
   ui->setupUi(this);
 
@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget* parent)
 
   connect(ui->actionOptions, SIGNAL(triggered()), this,
           SLOT(OnOptionsActionTriggered()));
+
+  ui->window_layout->addWidget(&browser_);
 }
 
 MainWindow::~MainWindow()

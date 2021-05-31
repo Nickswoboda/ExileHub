@@ -2,6 +2,8 @@
 
 #include <QMainWindow>
 
+#include "browser.hpp"
+
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
@@ -29,4 +31,5 @@ private:
   void changeEvent(QEvent* event) override;
 
   Ui::Application* ui;
+  Browser browser_;
 };

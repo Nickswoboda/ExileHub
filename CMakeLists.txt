@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #Version 5 must be used until Qt6 supports QtWebEngine
 set(QT_VERSION_MAJOR 5)
 
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Network REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Network WebEngineWidgets REQUIRED)
 
 set(PROJECT_SOURCES
         src/main.cpp
@@ -30,6 +30,8 @@ set(PROJECT_SOURCES
         src/options_dialog.cpp
         src/options_dialog.hpp
         src/options_dialog.ui
+        src/browser.cpp
+        src/browser.hpp
         assets/assets.qrc
 )
 
@@ -44,5 +46,6 @@ add_subdirectory(dependencies/quazip)
 
 target_link_libraries(ExileHub PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(ExileHub PRIVATE Qt${QT_VERSION_MAJOR}::Network)
+target_link_libraries(ExileHub PRIVATE Qt${QT_VERSION_MAJOR}::WebEngineWidgets)
 target_link_libraries(ExileHub PRIVATE QuaZip::QuaZip)
 
