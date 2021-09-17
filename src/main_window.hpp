@@ -3,6 +3,7 @@
 #include <QMainWindow>
 
 #include "browser.hpp"
+#include "navigation_area.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -31,5 +32,6 @@ private:
   void changeEvent(QEvent* event) override;
 
   Ui::Application* ui;
+  NavigationArea nav_area_;
   Browser browser_;
 };

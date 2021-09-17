@@ -32,6 +32,9 @@ set(PROJECT_SOURCES
         src/options_dialog.ui
         src/browser.cpp
         src/browser.hpp
+        src/navigation_area.cpp
+        src/navigation_area.hpp
+        src/navigation_area.ui
         assets/assets.qrc
 )
 
