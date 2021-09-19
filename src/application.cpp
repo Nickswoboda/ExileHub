@@ -1,8 +1,8 @@
 #include "application.hpp"
 
-    #include <QMessageBox>
+#include <QMessageBox>
 #include <QProcess>
-    #include <QSettings>
+#include <QSettings>
 
 #include "quazip/JlCompress.h"
 
