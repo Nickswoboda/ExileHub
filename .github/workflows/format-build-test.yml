@@ -27,6 +27,7 @@ jobs:
       run: |
         sudo apt-get install cppcheck
         sh ./scripts/analyze-all.sh
+        clang-format -v
     
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
