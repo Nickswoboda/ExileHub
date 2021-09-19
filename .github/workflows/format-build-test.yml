@@ -22,12 +22,17 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: 'true'
-        
+      
+    - name: Clang-format
+      run: sh ./scripts/format-all.sh
+    
+    - name: Commit format changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      
     - name: Static Analysis
       run: |
         sudo apt-get install cppcheck
         sh ./scripts/analyze-all.sh
-        clang-format -v
     
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
