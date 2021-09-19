@@ -1,6 +1,6 @@
 #include "application.hpp"
 
-    #include <QMessageBox>
+#include <QMessageBox>
 #include <QProcess>
 #include <QSettings>
 
@@ -9,7 +9,7 @@
 Application::Application(int& argc, char** argv)
     : QApplication(argc, argv), system_tray_(main_window_)
 {
-        int i = 0;
+  int i = 0;
   setOrganizationName("ExileHub");
   setApplicationName("ExileHub");
   setApplicationVersion("v1.0.0");
