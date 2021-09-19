@@ -24,7 +24,9 @@ jobs:
         submodules: 'true'
         
     - name: Static Analysis
-      run: sh ./scripts/analyze-all.sh
+      run: |
+        sudo apt-get install cppcheck
+        sh ./scripts/analyze-all.sh
     
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
