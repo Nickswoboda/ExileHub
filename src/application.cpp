@@ -11,14 +11,14 @@ Application::Application(int& argc, char** argv)
 {
   setOrganizationName("ExileHub");
   setApplicationName("ExileHub");
-  setApplicationVersion("v2.0.0");
+  setApplicationVersion("v1.0.0");
 
   main_window_.show();
 
   connect(&auto_updater_, SIGNAL(UpdateAvailable(int)), this,
           SLOT(OnUpdateAvailable(int)));
-  connect(&auto_updater_, SIGNAL(UpdateComplete()), this,
-          SLOT(OnUpdateComplete()));
+  connect(&auto_updater_, SIGNAL(UpdateComplete(const QString&, const QStringList&, bool)), this,
+          SLOT(OnUpdateComplete(const QString&, const QStringList&, bool)));
   connect(&main_window_, SIGNAL(UpdateCheckRequested()), this,
           SLOT(CheckForNewAppUpdates()));
 
@@ -45,16 +45,26 @@ void Application::OnUpdateAvailable(int asset_id)
   }
 }
 
-void Application::OnUpdateComplete()
+void Application::OnUpdateComplete(const QString& executable, const QStringList args, bool detached)
 {
   auto result =
       QMessageBox::question(&main_window_, "Update Complete",
                             "You must restart the application to apply the "
                             "update. Would you like to restart now?");
   if (result == QMessageBox::Yes) {
-    bool detached = QProcess::startDetached("ExileHub.exe", {});
-    if (detached) {
-      quit();
+    bool success = false;
+    if (detached){
+        success = QProcess::startDetached(executable, args);
+    } else{
+        success = QProcess::execute(executable, args);
+    }
+
+    if (!success){
+        qDebug() << "Unable to open updated executable: " << executable;
+    }
+
+    if (executable == "ExileHub" || executable == "ExileHub.exe"){
+        qApp->quit();
     }
   }
 }

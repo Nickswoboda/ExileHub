@@ -20,6 +20,6 @@ private:
 
 private slots:
   void OnUpdateAvailable(int asset_id);
-  void OnUpdateComplete();
+  void OnUpdateComplete(const QString& executable, const QStringList args, bool detached);
   void CheckForNewAppUpdates();
 };

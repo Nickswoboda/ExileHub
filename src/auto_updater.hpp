@@ -13,8 +13,10 @@ public:
   void DownloadRelease(int asset_id);
 
 signals:
+
   void UpdateAvailable(int asset_id);
-  void UpdateComplete();
+  //Should probably pass struct of application data that includes all of this
+  void UpdateComplete(const QString& executable, const QStringList& args, bool detached);
 
 private:
   QNetworkAccessManager network_manager_;
