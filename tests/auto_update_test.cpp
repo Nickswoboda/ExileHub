@@ -49,15 +49,25 @@ private slots:
 
     auto_updater.DownloadRelease(asset_id_);
 
-    QSignalSpy spy(&auto_updater, SIGNAL(UpdateComplete()));
+    QSignalSpy spy(
+        &auto_updater,
+        SIGNAL(UpdateComplete(const QString&, const QStringList&, bool)));
     spy.wait();
 
     QCOMPARE(spy.count(), 1);
 
     QVERIFY(QDir("temp").exists());
     QVERIFY(QFile::exists("temp/ExileHub.zip"));
-    QVERIFY(QFile::exists("temp/old.exe"));
+
+    auto current_name =
+        QFileInfo(QCoreApplication::applicationFilePath()).fileName();
+    QVERIFY(QFile::exists("temp/" + current_name + ".old"));
+
+#ifdef Q_OS_WIN32
     QVERIFY(QFile::exists("ExileHub.exe"));
+#else
+    QVERIFY(QFile::exists("ExileHub"));
+#endif
   }
 };
 
