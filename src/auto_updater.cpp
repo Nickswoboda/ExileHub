@@ -1,11 +1,11 @@
 #include "auto_updater.hpp"
 
+#include <QCoreApplication>
 #include <QDir>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QtNetwork/QNetworkReply>
-#include <QCoreApplication>
 
 #include "quazip/JlCompress.h"
 
@@ -65,18 +65,18 @@ void AutoUpdater::CheckLatestRelease()
     return;
   }
 
-#if Q_OS_WIN32
+#ifdef Q_OS_WIN32
   QString file_to_find = "ExileHub_windows.zip";
 #else
   QString file_to_find = "ExileHub_linux.zip";
 #endif
 
-  for (int i = 0; i < assets.size(); ++i){
-      auto object = assets[i].toObject();
-      if (object["name"].toString() == file_to_find){
-          emit UpdateAvailable(object["id"].toInt());
-          return;
-      }
+  for (int i = 0; i < assets.size(); ++i) {
+    auto object = assets[i].toObject();
+    if (object["name"].toString() == file_to_find) {
+      emit UpdateAvailable(object["id"].toInt());
+      return;
+    }
   }
 
   qDebug() << "Unable to find asset in repository: " << file_to_find;
@@ -108,25 +108,36 @@ void AutoUpdater::ExtractAssetZipData()
     return;
   }
 
-
-#if Q_OS_WIN32
+#ifdef Q_OS_WIN32
   QString file_to_find = QDir::currentPath() + "/temp/ExileHub.exe";
 #else
   QString file_to_find = QDir::currentPath() + "/temp/ExileHub";
 #endif
 
-  auto executable_it = std::find_if(
-      list.begin(), list.end(), [&file_to_find](QString s) {qDebug() << s; return s == file_to_find; });
+  auto executable_it =
+      std::find_if(list.begin(), list.end(), [&file_to_find](QString s) {
+        qDebug() << s;
+        return s == file_to_find;
+      });
 
   if (executable_it == list.end()) {
     qDebug() << "Could not find executable file.";
     return;
   }
 
-  auto current_name = QFileInfo(QCoreApplication::applicationFilePath()).fileName();
+  auto current_name =
+      QFileInfo(QCoreApplication::applicationFilePath()).fileName();
 
-  bool status = QFile::remove(current_name);
-  //bool status1 = QFile::rename(current_name, "temp/" + current_name + ".old");
+#ifdef Q_OS_WIN32
+  bool success = QFile::rename(current_name, "temp/" + current_name + ".old");
+#else
+  bool success = QFile::remove(current_name);
+#endif
+
+  if (!success) {
+    qDebug() << "Unable to rename or remove current executable: "
+             << current_name;
+  }
   QFile::rename(*executable_it, current_name);
 
   emit UpdateComplete(current_name, {"--auto-updated"}, true);
