@@ -1,3 +1,10 @@
+#Pre-Commit checks
+#Code should still be formatted and analyzed,
+#but be able to still be commited,
+#regardless of the results
+
+exec < /dev/tty
+
 FILES=$(git diff --cached --name-only | grep -E '.*\.(c|cpp|h|hpp)$')
 
 for FILE in $FILES
@@ -16,7 +23,8 @@ if [ -n "${FILES_SRC}" ]; then
     cppcheck --error-exitcode=1 --enable=warning,style,performance $FILES_SRC;
         if [ $? -eq 1 ]; then
             echo Analysis Failed
-            exit 1
+	    echo
+	    read -n 1 -s -r -p "Press any key to continue"
         else
             echo Analysis Complete
         fi
@@ -24,6 +32,10 @@ else
     echo No files to analyze
 fi
 
-scripts/unit-tests.sh
+cd $(dirname "$0")
+./unit-tests.sh
 
-exit $?
+echo
+read -n 1 -s -r -p "Press any key to continue"
+
+exit 0
