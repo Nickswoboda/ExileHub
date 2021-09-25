@@ -15,7 +15,7 @@ cd build
 
 cmake .. -G Ninja
 
-Ninja
+ninja
 
 #Must have Qt .dlls in PATH
 cd tests
