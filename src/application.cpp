@@ -17,7 +17,9 @@ Application::Application(int& argc, char** argv)
 
   connect(&auto_updater_, SIGNAL(UpdateAvailable(int)), this,
           SLOT(OnUpdateAvailable(int)));
-  connect(&auto_updater_, SIGNAL(UpdateComplete(const QString&, const QStringList&, bool)), this,
+  connect(&auto_updater_,
+          SIGNAL(UpdateComplete(const QString&, const QStringList&, bool)),
+          this,
           SLOT(OnUpdateComplete(const QString&, const QStringList&, bool)));
   connect(&main_window_, SIGNAL(UpdateCheckRequested()), this,
           SLOT(CheckForNewAppUpdates()));
@@ -45,7 +47,8 @@ void Application::OnUpdateAvailable(int asset_id)
   }
 }
 
-void Application::OnUpdateComplete(const QString& executable, const QStringList args, bool detached)
+void Application::OnUpdateComplete(const QString& executable,
+                                   const QStringList args, bool detached)
 {
   auto result =
       QMessageBox::question(&main_window_, "Update Complete",
@@ -53,18 +56,18 @@ void Application::OnUpdateComplete(const QString& executable, const QStringList 
                             "update. Would you like to restart now?");
   if (result == QMessageBox::Yes) {
     bool success = false;
-    if (detached){
-        success = QProcess::startDetached(executable, args);
-    } else{
-        success = QProcess::execute(executable, args);
+    if (detached) {
+      success = QProcess::startDetached(executable, args);
+    } else {
+      success = QProcess::execute(executable, args);
     }
 
-    if (!success){
-        qDebug() << "Unable to open updated executable: " << executable;
+    if (!success) {
+      qDebug() << "Unable to open updated executable: " << executable;
     }
 
-    if (executable == "ExileHub" || executable == "ExileHub.exe"){
-        qApp->quit();
+    if (executable == "ExileHub" || executable == "ExileHub.exe") {
+      qApp->quit();
     }
   }
 }
