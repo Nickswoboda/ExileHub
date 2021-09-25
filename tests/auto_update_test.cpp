@@ -59,7 +59,10 @@ private slots:
 
     auto current_name =
         QFileInfo(QCoreApplication::applicationFilePath()).fileName();
+#ifdef Q_OS_WIN32
     QVERIFY(QFile::exists("temp/" + current_name + ".old"));
+#endif
+
     QVERIFY(QFile::exists(current_name));
   }
 };
