@@ -1,7 +1,6 @@
 #include "auto_updater.hpp"
 
 #include <QCoreApplication>
-#include <QDir>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -11,7 +10,6 @@
 
 AutoUpdater::AutoUpdater()
 {
-  QDir("temp").removeRecursively();
   network_manager_.setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
 }
 
@@ -115,10 +113,8 @@ void AutoUpdater::ExtractAssetZipData()
 #endif
 
   auto executable_it =
-      std::find_if(list.begin(), list.end(), [&file_to_find](QString s) {
-        qDebug() << s;
-        return s == file_to_find;
-      });
+      std::find_if(list.begin(), list.end(),
+                   [&file_to_find](QString s) { return s == file_to_find; });
 
   if (executable_it == list.end()) {
     qDebug() << "Could not find executable file.";

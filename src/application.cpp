@@ -1,5 +1,6 @@
 #include "application.hpp"
 
+#include <QDir>
 #include <QMessageBox>
 #include <QProcess>
 #include <QSettings>
@@ -24,16 +25,18 @@ Application::Application(int& argc, char** argv)
   connect(&main_window_, SIGNAL(UpdateCheckRequested()), this,
           SLOT(CheckForNewAppUpdates()));
 
+  for (int i = 1; i < argc; ++i) {
+    if (QString(argv[i]) == "--auto-updated") {
+      QDir("temp").removeRecursively();
+      QMessageBox::information(&main_window_, "Update Complete",
+                               "ExileHub has been successfully updated.");
+      return;
+    }
+  }
+
   QSettings settings;
   if (settings.value("options/auto_update").toBool()) {
     CheckForNewAppUpdates();
-  }
-
-  for (int i = 1; i < argc; ++i) {
-    if (QString(argv[i]) == "--auto-updated") {
-      QMessageBox::information(&main_window_, "Update Complete",
-                               "ExileHub has been successfully updated.");
-    }
   }
 }
 
