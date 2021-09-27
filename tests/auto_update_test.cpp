@@ -14,13 +14,6 @@ public:
 
   int asset_id_ = -1;
 private slots:
-  void TestTempFolderDeleted()
-  {
-    AutoUpdater auto_updater;
-
-    QVERIFY(!QDir("temp").exists());
-  }
-
   void TestNewReleaseAvailable()
   {
     AutoUpdater auto_updater;
