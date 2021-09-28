@@ -3,6 +3,7 @@
 #include <QSettings>
 
 #include "./ui_main_window.h"
+#include "add_app_dialog.hpp"
 #include "options_dialog.hpp"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -15,6 +16,8 @@ MainWindow::MainWindow(QWidget* parent)
 
   connect(ui->actionOptions, SIGNAL(triggered()), this,
           SLOT(OnOptionsActionTriggered()));
+  connect(ui->actionAdd_App, SIGNAL(triggered()), this,
+          SLOT(OnAddAppActionTriggered()));
 }
 
 MainWindow::~MainWindow()
@@ -25,6 +28,12 @@ MainWindow::~MainWindow()
 void MainWindow::OnOptionsActionTriggered()
 {
   auto dialog = new OptionsDialog(this);
+  dialog->exec();
+}
+
+void MainWindow::OnAddAppActionTriggered()
+{
+  auto dialog = new AddAppDialog(this);
   dialog->exec();
 }
 

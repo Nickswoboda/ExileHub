@@ -24,6 +24,7 @@ public:
 
 private slots:
   void OnOptionsActionTriggered();
+  void OnAddAppActionTriggered();
 
 private:
   void changeEvent(QEvent* event) override;
