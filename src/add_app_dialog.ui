@@ -40,50 +40,43 @@
    </property>
    <layout class="QFormLayout" name="formLayout">
     <item row="0" column="0">
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="name_label">
       <property name="text">
        <string>Name:</string>
       </property>
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QLineEdit" name="lineEdit"/>
-    </item>
-    <item row="1" column="0">
-     <widget class="QRadioButton" name="radioButton">
-      <property name="text">
-       <string>Github</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QRadioButton" name="radioButton_2">
-      <property name="text">
-       <string>Manual</string>
-      </property>
-     </widget>
+     <widget class="QLineEdit" name="name_edit"/>
     </item>
     <item row="2" column="0">
-     <widget class="QLabel" name="label_2">
+     <widget class="QLabel" name="path_label">
       <property name="text">
        <string>Path:</string>
       </property>
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="QLineEdit" name="lineEdit_2"/>
+     <widget class="QLineEdit" name="path_edit"/>
     </item>
-    <item row="3" column="0">
-     <widget class="QRadioButton" name="radioButton_3">
+    <item row="1" column="0">
+     <widget class="QCheckBox" name="manual_checkbox">
       <property name="text">
-       <string>Child</string>
+       <string>Manual</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
-     <widget class="QRadioButton" name="radioButton_4">
+    <item row="3" column="0">
+     <widget class="QCheckBox" name="detached_checkbox">
       <property name="text">
        <string>Detached</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QCheckBox" name="update_checkbox">
+      <property name="text">
+       <string>Check for updates</string>
       </property>
      </widget>
     </item>

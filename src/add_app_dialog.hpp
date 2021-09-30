@@ -15,6 +15,9 @@ public:
   explicit AddAppDialog(QWidget* parent = nullptr);
   ~AddAppDialog();
 
+  bool RequiresDownload() const;
+  const QString Path() const;
+
 private:
   Ui::AddAppDialog* ui;
 };
