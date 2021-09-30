@@ -2,6 +2,8 @@
 
 #include <QMainWindow>
 
+#include "app_manager.hpp"
+
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
@@ -27,6 +29,7 @@ private slots:
   void OnAddAppActionTriggered();
 
 private:
+  AppManager app_manager_;
   void changeEvent(QEvent* event) override;
 
   Ui::Application* ui;

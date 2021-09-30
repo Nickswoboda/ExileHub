@@ -33,8 +33,16 @@ void MainWindow::OnOptionsActionTriggered()
 
 void MainWindow::OnAddAppActionTriggered()
 {
-  auto dialog = new AddAppDialog(this);
-  dialog->exec();
+  AddAppDialog dialog;
+  auto result = dialog.exec();
+  if (result != QDialog::Accepted) {
+    return;
+  }
+
+  bool success = app_manager_.AddApp(dialog.RequiresDownload(), dialog.Path());
+  if (!success) {
+    return;
+  }
 }
 
 void MainWindow::changeEvent(QEvent* event)
