@@ -33,6 +33,8 @@ set(PROJECT_SOURCES
         src/add_app_dialog.cpp
         src/add_app_dialog.hpp
         src/add_app_dialog.ui
+        src/app_manager.cpp
+        src/app_manager.hpp
         assets/assets.qrc
 )
 
