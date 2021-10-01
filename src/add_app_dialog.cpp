@@ -18,7 +18,7 @@ bool AddAppDialog::RequiresDownload() const
   return ui->manual_checkbox->isChecked();
 }
 
-const QString AddAppDialog::Path() const
+QString AddAppDialog::Path() const
 {
   return ui->path_edit->text();
 }
