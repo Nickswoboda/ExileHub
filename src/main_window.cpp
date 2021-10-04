@@ -39,10 +39,7 @@ void MainWindow::OnAddAppActionTriggered()
     return;
   }
 
-  bool success = app_manager_.AddApp(dialog.RequiresDownload(), dialog.Path());
-  if (!success) {
-    return;
-  }
+  auto app = app_manager_.AddApp(dialog.Path());
 }
 
 void MainWindow::changeEvent(QEvent* event)
