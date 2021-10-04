@@ -35,7 +35,10 @@ set(PROJECT_SOURCES
         src/add_app_dialog.ui
         src/app_manager.cpp
         src/app_manager.hpp
+        src/app.cpp
+        src/app.hpp
         assets/assets.qrc
+
 )
 
 add_executable(ExileHub
