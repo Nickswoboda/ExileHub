@@ -7,17 +7,18 @@
 #include "options_dialog.hpp"
 
 MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent), ui(new Ui::Application)
+    : QMainWindow(parent), ui(new Ui::Application), apps_view_(app_manager_)
 {
   ui->setupUi(this);
+  ui->centralwidget->layout()->addWidget(&apps_view_);
 
   setWindowIcon(QIcon(":/assets/icon.png"));
   setWindowTitle("ExileHub");
 
   connect(ui->actionOptions, SIGNAL(triggered()), this,
           SLOT(OnOptionsActionTriggered()));
-  connect(ui->actionAdd_App, SIGNAL(triggered()), this,
-          SLOT(OnAddAppActionTriggered()));
+  connect(ui->actionAdd_App, SIGNAL(triggered()), &apps_view_,
+          SLOT(OnAddAppRequested()));
 }
 
 MainWindow::~MainWindow()
@@ -29,17 +30,6 @@ void MainWindow::OnOptionsActionTriggered()
 {
   auto dialog = new OptionsDialog(this);
   dialog->exec();
-}
-
-void MainWindow::OnAddAppActionTriggered()
-{
-  AddAppDialog dialog;
-  auto result = dialog.exec();
-  if (result != QDialog::Accepted) {
-    return;
-  }
-
-  auto app = app_manager_.AddApp(dialog.Path());
 }
 
 void MainWindow::changeEvent(QEvent* event)
