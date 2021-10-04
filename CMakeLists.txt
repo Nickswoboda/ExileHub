@@ -37,6 +37,9 @@ set(PROJECT_SOURCES
         src/app_manager.hpp
         src/app.cpp
         src/app.hpp
+        src/apps_view.hpp
+        src/apps_view.cpp
+        src/apps_view.ui
         assets/assets.qrc
 
 )
