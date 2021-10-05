@@ -23,6 +23,9 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QListWidget" name="app_list"/>
+     </item>
     </layout>
    </item>
   </layout>

@@ -12,6 +12,8 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
 
   connect(ui->add_app_button, SIGNAL(clicked(bool)), this,
           SLOT(OnAddAppRequested()));
+  connect(ui->app_list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this,
+          SLOT(OnAppDoubleClicked(QListWidgetItem*)));
 }
 
 AppsView::~AppsView()
@@ -27,6 +29,20 @@ void AppsView::OnAddAppRequested()
     return;
   }
 
-  auto app = app_manager_.AddApp(dialog.Path());
-  layout()->addWidget(new QLabel(app.name_));
+  auto& app = app_manager_.AddApp(dialog.Path());
+  ui->app_list->addItem(app.name_);
+  app.run_detached_ = true;
+}
+
+void AppsView::OnAppDoubleClicked(QListWidgetItem* item)
+{
+  int index = ui->app_list->row(item);
+  auto* app = app_manager_.AppAtIndex(index);
+  if (app != nullptr) {
+    if (app->process_.state() == QProcess::ProcessState::Running) {
+      app->Stop();
+    } else {
+      app->Run();
+    }
+  }
 }

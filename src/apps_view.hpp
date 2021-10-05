@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QListWidgetItem>
 #include <QWidget>
 
 #include "app_manager.hpp"
@@ -24,4 +25,5 @@ private:
 
 public slots:
   void OnAddAppRequested();
+  void OnAppDoubleClicked(QListWidgetItem* item);
 };
