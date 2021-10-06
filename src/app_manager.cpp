@@ -7,7 +7,6 @@ AppManager::AppManager(QObject* parent) : QObject(parent) {}
 AppManager::~AppManager()
 {
   for (auto* app : apps_) {
-    app->Stop();
     delete app;
   }
 }

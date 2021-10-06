@@ -14,23 +14,33 @@ App::App(const QString& name, const QString& executable_path)
 {
 }
 
+App::~App()
+{
+  if (detach_on_exit_) {
+    process_.Detach();
+  }
+}
+
 bool App::Run()
 {
   if (process_.state() == QProcess::ProcessState::Running) {
     return false;
   }
-  bool success = false;
-  if (run_detached_) {
-    success = process_.startDetached();
-  } else {
-    success = process_.open();
-  }
-
-  return success;
+  return process_.open();
 }
 
 bool App::Stop()
 {
   process_.kill();
   return process_.state() != QProcess::ProcessState::Running;
+}
+
+DetachableProcess::DetachableProcess(QObject* parent) : QProcess(parent) {}
+
+void DetachableProcess::Detach()
+{
+  // QProcess dtor checks to see if the process is running in order to terminate
+  // it by changing the process state, the dtor will not kill the process when
+  // the QProcess is destroyed
+  setProcessState(ProcessState::NotRunning);
 }

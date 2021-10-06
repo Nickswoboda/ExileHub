@@ -31,7 +31,7 @@ void AppsView::OnAddAppRequested()
 
   auto& app = app_manager_.AddApp(dialog.Path());
   ui->app_list->addItem(app.name_);
-  app.run_detached_ = true;
+  app.detach_on_exit_ = true;
 }
 
 void AppsView::OnAppDoubleClicked(QListWidgetItem* item)

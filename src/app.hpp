@@ -2,18 +2,31 @@
 
 #include <QProcess>
 #include <QString>
+
+class DetachableProcess : public QProcess
+{
+public:
+  DetachableProcess(QObject* parent = nullptr);
+
+  void Detach();
+};
+
 class App
 {
 public:
   explicit App(const QString& executable_path);
   App(const QString& name, const QString& executable_path);
 
+  ~App();
+
   bool Run();
   bool Stop();
 
-  QProcess process_;
+  DetachableProcess process_;
   QString name_;
   QString executable_path_;
   bool auto_check_updates_ = false;
-  bool run_detached_ = false;
+  // Determines whether or not the app will close when ExileHub closes, or if it
+  // will detach into it's own process
+  bool detach_on_exit_ = false;
 };
