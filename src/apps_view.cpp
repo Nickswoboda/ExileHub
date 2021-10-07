@@ -3,6 +3,7 @@
 #include <QLabel>
 
 #include "add_app_dialog.hpp"
+#include "api_handler.hpp"
 #include "ui_apps_view.h"
 
 AppsView::AppsView(AppManager& app_manager, QWidget* parent)
@@ -23,6 +24,7 @@ AppsView::~AppsView()
 
 void AppsView::OnAddAppRequested()
 {
+  /*
   AddAppDialog dialog;
   auto result = dialog.exec();
   if (result != QDialog::Accepted) {
@@ -32,6 +34,11 @@ void AppsView::OnAddAppRequested()
   auto& app = app_manager_.AddApp(dialog.Path());
   ui->app_list->addItem(app.name_);
   app.detach_on_exit_ = true;
+*/
+
+  ApiHandler::GetLatestRelease(
+      {"nickswoboda", "ExileHub"},
+      [](QString latest_releaste) { qDebug() << latest_releaste; });
 }
 
 void AppsView::OnAppDoubleClicked(QListWidgetItem* item)
