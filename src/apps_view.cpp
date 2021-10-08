@@ -38,7 +38,13 @@ void AppsView::OnAddAppRequested()
 
   ApiHandler::GetLatestRelease(
       {"nickswoboda", "ExileHub"},
-      [](QString latest_releaste) { qDebug() << latest_releaste; });
+      [](QString latest_release, QVector<ReleaseAsset> assets) {
+        if (latest_release.isEmpty()) return;
+        qDebug() << latest_release;
+        for (auto& asset : assets) {
+          qDebug() << asset.name_ << " " << asset.id_;
+        }
+      });
 }
 
 void AppsView::OnAppDoubleClicked(QListWidgetItem* item)

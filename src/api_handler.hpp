@@ -1,8 +1,9 @@
 #pragma once
 
-#include <QByteArray>
 #include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <QString>
+#include <QVector>
 #include <functional>
 
 struct Repository {
@@ -10,15 +11,24 @@ struct Repository {
   QString name_;
 };
 
+struct ReleaseAsset {
+  QString name_;
+  int id_;
+};
+
 class ApiHandler
 {
 public:
-  static void GetLatestRelease(const Repository& repo,
-                               const std::function<void(QString)> callback);
+  static void GetLatestRelease(
+      const Repository& repo,
+      const std::function<void(QString, const QVector<ReleaseAsset>&)>
+          callback);
 
 private:
   static void OnGetLatestReleaseFinished(
-      const QByteArray& data, const std::function<void(QString)> callback);
+      QNetworkReply* reply,
+      const std::function<void(QString, const QVector<ReleaseAsset>&)>
+          callback);
 
   static QNetworkAccessManager network_manager_;
 };
