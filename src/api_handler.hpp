@@ -23,12 +23,18 @@ public:
       const Repository& repo,
       const std::function<void(QString, const QVector<ReleaseAsset>&)>
           callback);
+  static void DownloadAsset(
+      const Repository& repo, int asset_id,
+      const std::function<void(const QStringList&)> callback);
 
 private:
   static void OnGetLatestReleaseFinished(
       QNetworkReply* reply,
       const std::function<void(QString, const QVector<ReleaseAsset>&)>
           callback);
+  static void OnDownloadAssetFinished(
+      QNetworkReply* reply,
+      const std::function<void(const QStringList&)> callback);
 
   static QNetworkAccessManager network_manager_;
 };
