@@ -1,11 +1,34 @@
 #include "apps_view.hpp"
 
+#include <quazip/JlCompress.h>
+
 #include <QInputDialog>
 #include <QLabel>
+#include <QMessageBox>
 
 #include "add_app_dialog.hpp"
 #include "api_handler.hpp"
 #include "ui_apps_view.h"
+
+QStringList ExtractAndMoveFile(const QString& file, const QString& dest_path)
+{
+  auto list = JlCompress::extractDir(file, dest_path);
+  if (list.empty()) {
+    qDebug() << "Zip extraction failed.";
+    return QStringList();
+  }
+
+  QStringList executables;
+
+  for (auto& file_name : list) {
+    // will be platform specific
+    if (file_name.endsWith(".exe")) {
+      executables.push_back(file_name);
+    }
+  }
+
+  return executables;
+}
 
 AppsView::AppsView(AppManager& app_manager, QWidget* parent)
     : QWidget(parent), ui(new Ui::AppsView), app_manager_(app_manager)
@@ -23,6 +46,51 @@ AppsView::~AppsView()
   delete ui;
 }
 
+void AppsView::OnLatestReleaseFound(const Repository& repo,
+                                    const QString& release,
+                                    const QVector<ReleaseAsset>& assets)
+{
+  if (release.isEmpty() || assets.isEmpty()) return;
+
+  int asset_index = 0;
+  if (assets.size() > 1) {
+    QStringList list;
+    std::transform(assets.begin(), assets.end(), std::back_inserter(list),
+                   [](ReleaseAsset const& asset) { return asset.name_; });
+    auto selection = QInputDialog::getItem(nullptr, "Multiple assets found",
+                                           "Choose an asset", list);
+
+    asset_index = list.indexOf(selection);
+  }
+
+  ApiHandler::DownloadAsset(repo, assets[asset_index],
+                            [this, repo](const QString& file_path) {
+                              OnAssetDownloaded(repo, file_path);
+                            });
+}
+
+void AppsView::OnAssetDownloaded(const Repository& repo,
+                                 const QString& file_path)
+{
+  QString dest_folder = "apps/" + repo.author_ + "_" + repo.name_;
+  auto executables = ExtractAndMoveFile(file_path, dest_folder);
+  if (executables.empty()) {
+    QMessageBox::critical(nullptr, "Unable to extract asset file",
+                          "Unable to extract asset file");
+    return;
+  }
+
+  QString executable = executables[0];
+  if (executables.size() > 1) {
+    auto selection = QInputDialog::getItem(nullptr, "Multiple assets found",
+                                           "Choose an asset", executables);
+
+    executable = selection;
+  }
+  auto& app = app_manager_.AddApp(executable);
+  ui->app_list->addItem(app.name_);
+}
+
 Repository ExtractRepoFromUrl(const QString& path)
 {
   int index = path.indexOf("github.com/");
@@ -36,7 +104,7 @@ Repository ExtractRepoFromUrl(const QString& path)
   if (end_user_index == -1) {
     return Repository();
   }
-  repo.user_ = path.mid(user_index, end_user_index - user_index);
+  repo.author_ = path.mid(user_index, end_user_index - user_index);
 
   int name_index = end_user_index + 1;
   int end_name_index = path.indexOf('/', name_index);
@@ -59,47 +127,17 @@ void AppsView::OnAddAppRequested()
 
   if (dialog.RequiresDownload()) {
     Repository repo = ExtractRepoFromUrl(dialog.Path());
-    ApiHandler::GetLatestRelease(repo, [&, temp = repo](
-                                           QString latest_release,
-                                           QVector<ReleaseAsset> assets) {
-      if (latest_release.isEmpty() || assets.isEmpty()) return;
-
-      int asset_id = assets[0].id_;
-      if (assets.size() > 1) {
-        QStringList list;
-        std::transform(assets.begin(), assets.end(), std::back_inserter(list),
-                       [](ReleaseAsset const& asset) { return asset.name_; });
-        auto selection = QInputDialog::getItem(nullptr, "Multiple assets found",
-                                               "Choose an asset", list);
-
-        auto index = list.indexOf(selection);
-        asset_id = assets[index].id_;
-      }
-      ApiHandler::DownloadAsset(
-          temp, asset_id, [&](const QStringList& executables) {
-            auto& app = app_manager_.AddApp(executables[0]);
-            ui->app_list->addItem(app.name_);
-          });
-    });
+    ApiHandler::GetLatestRelease(
+        repo,
+        [this, repo](const QString& release, QVector<ReleaseAsset> assets) {
+          OnLatestReleaseFound(repo, release, assets);
+        });
     return;
   }
+
   auto& app = app_manager_.AddApp(dialog.Path());
   ui->app_list->addItem(app.name_);
   app.detach_on_exit_ = true;
-
-  /*
-  ApiHandler::GetLatestRelease(
-      {"nickswoboda", "ExileHub"},
-      [&](QString latest_release, QVector<ReleaseAsset> assets) {
-        if (latest_release.isEmpty()) return;
-
-        ApiHandler::DownloadAsset({"nickswoboda", "ExileHub"},assets[1].id_,
-  [&](const QStringList& executables){ qDebug() << executables[0]; auto& app =
-  app_manager_.AddApp(executables[0]); ui->app_list->addItem(app.name_);
-        });
-        }
-      );
-  */
 }
 
 void AppsView::OnAppDoubleClicked(QListWidgetItem* item)

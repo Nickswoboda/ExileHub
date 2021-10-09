@@ -1,7 +1,5 @@
 #include "api_handler.hpp"
 
-#include <quazip/JlCompress.h>
-
 #include <QDir>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -30,9 +28,10 @@ QByteArray GetNetworkReplyData(QNetworkReply* reply)
 
 void ApiHandler::GetLatestRelease(
     const Repository& repo,
-    const std::function<void(QString, const QVector<ReleaseAsset>&)> callback)
+    const std::function<void(const QString&, const QVector<ReleaseAsset>&)>
+        callback)
 {
-  QUrl latest_release_url("https://api.github.com/repos/" + repo.user_ + "/" +
+  QUrl latest_release_url("https://api.github.com/repos/" + repo.author_ + "/" +
                           repo.name_ + "/releases/latest");
   QNetworkRequest request(latest_release_url);
   QNetworkReply* reply = network_manager_.get(request);
@@ -42,16 +41,17 @@ void ApiHandler::GetLatestRelease(
 }
 
 void ApiHandler::DownloadAsset(
-    const Repository& repo, int asset_id,
-    const std::function<void(const QStringList&)> callback)
+    const Repository& repo, ReleaseAsset asset,
+    const std::function<void(const QString&)> callback)
 {
   // move to init func
   network_manager_.setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
-  QUrl asset_url("https://api.github.com/repos/" + repo.user_ + "/" +
-                 repo.name_ + "/releases/assets/" + QString::number(asset_id));
+  QUrl asset_url("https://api.github.com/repos/" + repo.author_ + "/" +
+                 repo.name_ + "/releases/assets/" + QString::number(asset.id_));
   QNetworkRequest request(asset_url);
   request.setRawHeader("Accept", "application/octet-stream");
   QNetworkReply* reply = network_manager_.get(request);
+  reply->setProperty("asset_name", asset.name_);
   QObject::connect(reply, &QNetworkReply::finished, [reply, callback]() {
     OnDownloadAssetFinished(reply, callback);
   });
@@ -59,7 +59,8 @@ void ApiHandler::DownloadAsset(
 
 void ApiHandler::OnGetLatestReleaseFinished(
     QNetworkReply* reply,
-    const std::function<void(QString, const QVector<ReleaseAsset>&)> callback)
+    const std::function<void(const QString&, const QVector<ReleaseAsset>&)>
+        callback)
 {
   auto data = GetNetworkReplyData(reply);
   if (data.isEmpty()) {
@@ -87,38 +88,23 @@ void ApiHandler::OnGetLatestReleaseFinished(
 }
 
 void ApiHandler::OnDownloadAssetFinished(
-    QNetworkReply* reply,
-    const std::function<void(const QStringList&)> callback)
+    QNetworkReply* reply, const std::function<void(const QString&)> callback)
 {
   auto data = GetNetworkReplyData(reply);
   if (data.isEmpty()) {
     return;
   }
 
-  if (!QDir("apps").exists()) {
-    QDir().mkdir("apps");
-  }
-
-  QFile zip_file("temp.zip");
-  if (zip_file.open(QIODevice::WriteOnly)) {
-    zip_file.write(data);
-    zip_file.close();
-  }
-
-  // need to somehow get repo info
-  auto list = JlCompress::extractDir(zip_file.fileName(), "apps");
-  if (list.empty()) {
-    qDebug() << "Zip extraction failed.";
-    return;
-  }
-  QStringList executables;
-
-  for (auto& file : list) {
-    // will be platform specific
-    if (file.endsWith(".exe")) {
-      executables.push_back(file);
+  QDir().mkdir("temp");
+  QFile asset_file("temp/" + reply->property("asset_name").toString());
+  if (asset_file.open(QIODevice::WriteOnly)) {
+    auto num_bytes = asset_file.write(data);
+    if (num_bytes != data.size()) {
+      QMessageBox::critical(nullptr, "Unable to download asset",
+                            "Unable to download asset");
+      return;
     }
   }
 
-  callback(executables);
+  callback(asset_file.fileName());
 }

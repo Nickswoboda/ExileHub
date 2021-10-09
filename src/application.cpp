@@ -5,8 +5,6 @@
 #include <QProcess>
 #include <QSettings>
 
-#include "quazip/JlCompress.h"
-
 Application::Application(int& argc, char** argv)
     : QApplication(argc, argv), system_tray_(main_window_)
 {

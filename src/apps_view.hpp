@@ -3,6 +3,7 @@
 #include <QListWidgetItem>
 #include <QWidget>
 
+#include "api_handler.hpp"
 #include "app_manager.hpp"
 
 namespace Ui
@@ -19,6 +20,9 @@ public:
   ~AppsView();
 
 private:
+  void OnLatestReleaseFound(const Repository& repo, const QString& release,
+                            const QVector<ReleaseAsset>& assets);
+  void OnAssetDownloaded(const Repository& repo, const QString& file_path);
   Ui::AppsView* ui;
 
   AppManager& app_manager_;
