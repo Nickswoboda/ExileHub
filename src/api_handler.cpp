@@ -9,59 +9,60 @@
 #include <QNetworkRequest>
 #include <QUrl>
 
-QNetworkAccessManager ApiHandler::network_manager_;
-
 QByteArray GetNetworkReplyData(QNetworkReply* reply)
 {
   QByteArray data = reply->readAll();
 
   reply->deleteLater();
   if (reply->error() || data.isEmpty()) {
-    // clear so on finished slot will not also submit an error
     QMessageBox::critical(nullptr, reply->errorString(),
                           "Unable to get network data.\n" + data);
+
+    // clear so on finished slot will not also show an error
     data.clear();
   }
 
   return data;
 }
 
-void ApiHandler::GetLatestRelease(
-    const Repository& repo,
-    const std::function<void(const QString&, const QVector<ReleaseAsset>&)>
-        callback)
+ApiHandler::ApiHandler()
+{
+  network_manager_.setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
+}
+
+ApiHandler& ApiHandler::Instance()
+{
+  static ApiHandler api_handler;
+  return api_handler;
+}
+
+void ApiHandler::GetLatestRelease(const Repository& repo)
 {
   QUrl latest_release_url("https://api.github.com/repos/" + repo.author_ + "/" +
                           repo.name_ + "/releases/latest");
   QNetworkRequest request(latest_release_url);
   QNetworkReply* reply = network_manager_.get(request);
-  QObject::connect(reply, &QNetworkReply::finished, [reply, callback]() {
-    OnGetLatestReleaseFinished(reply, callback);
-  });
+  reply->setProperty("repo", QVariant::fromValue(repo));
+  QObject::connect(reply, SIGNAL(finished()), this,
+                   SLOT(OnGetLatestReleaseFinished()));
 }
 
-void ApiHandler::DownloadAsset(
-    const Repository& repo, ReleaseAsset asset,
-    const std::function<void(const QString&)> callback)
+void ApiHandler::DownloadAsset(const Repository& repo, ReleaseAsset asset)
 {
-  // move to init func
-  network_manager_.setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
   QUrl asset_url("https://api.github.com/repos/" + repo.author_ + "/" +
                  repo.name_ + "/releases/assets/" + QString::number(asset.id_));
   QNetworkRequest request(asset_url);
   request.setRawHeader("Accept", "application/octet-stream");
   QNetworkReply* reply = network_manager_.get(request);
   reply->setProperty("asset_name", asset.name_);
-  QObject::connect(reply, &QNetworkReply::finished, [reply, callback]() {
-    OnDownloadAssetFinished(reply, callback);
-  });
+  reply->setProperty("repo", QVariant::fromValue(repo));
+  QObject::connect(reply, SIGNAL(finished()), this,
+                   SLOT(OnDownloadAssetFinished()));
 }
 
-void ApiHandler::OnGetLatestReleaseFinished(
-    QNetworkReply* reply,
-    const std::function<void(const QString&, const QVector<ReleaseAsset>&)>
-        callback)
+void ApiHandler::OnGetLatestReleaseFinished()
 {
+  auto reply = dynamic_cast<QNetworkReply*>(sender());
   auto data = GetNetworkReplyData(reply);
   if (data.isEmpty()) {
     return;
@@ -84,12 +85,13 @@ void ApiHandler::OnGetLatestReleaseFinished(
     asset.id_ = asset_obj["id"].toInt();
     assets.push_back(asset);
   }
-  callback(json_obj["name"].toString(), assets);
+  emit LatestReleaseFound(reply->property("repo").value<Repository>(),
+                          json_obj["name"].toString(), assets);
 }
 
-void ApiHandler::OnDownloadAssetFinished(
-    QNetworkReply* reply, const std::function<void(const QString&)> callback)
+void ApiHandler::OnDownloadAssetFinished()
 {
+  auto reply = dynamic_cast<QNetworkReply*>(sender());
   auto data = GetNetworkReplyData(reply);
   if (data.isEmpty()) {
     return;
@@ -106,5 +108,6 @@ void ApiHandler::OnDownloadAssetFinished(
     }
   }
 
-  callback(asset_file.fileName());
+  emit AssetDownloadComplete(reply->property("repo").value<Repository>(),
+                             asset_file.fileName());
 }

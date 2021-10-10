@@ -39,6 +39,17 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
           SLOT(OnAddAppRequested()));
   connect(ui->app_list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this,
           SLOT(OnAppDoubleClicked(QListWidgetItem*)));
+
+  connect(&ApiHandler::Instance(),
+          SIGNAL(LatestReleaseFound(const Repository&, const QString&,
+                                    const QVector<ReleaseAsset>&)),
+          this,
+          SLOT(OnLatestReleaseFound(const Repository&, const QString&,
+                                    const QVector<ReleaseAsset>&)));
+  connect(&ApiHandler::Instance(),
+          SIGNAL(AssetDownloadComplete(const Repository&, const QString&)),
+          this,
+          SLOT(OnAssetDownloadComplete(const Repository&, const QString&)));
 }
 
 AppsView::~AppsView()
@@ -52,6 +63,9 @@ void AppsView::OnLatestReleaseFound(const Repository& repo,
 {
   if (release.isEmpty() || assets.isEmpty()) return;
 
+  // if repo already exists, request came from checking for app update
+  // else creating new app
+
   int asset_index = 0;
   if (assets.size() > 1) {
     QStringList list;
@@ -63,14 +77,11 @@ void AppsView::OnLatestReleaseFound(const Repository& repo,
     asset_index = list.indexOf(selection);
   }
 
-  ApiHandler::DownloadAsset(repo, assets[asset_index],
-                            [this, repo](const QString& file_path) {
-                              OnAssetDownloaded(repo, file_path);
-                            });
+  ApiHandler::Instance().DownloadAsset(repo, assets[asset_index]);
 }
 
-void AppsView::OnAssetDownloaded(const Repository& repo,
-                                 const QString& file_path)
+void AppsView::OnAssetDownloadComplete(const Repository& repo,
+                                       const QString& file_path)
 {
   QString dest_folder = "apps/" + repo.author_ + "_" + repo.name_;
   auto executables = ExtractAndMoveFile(file_path, dest_folder);
@@ -127,11 +138,7 @@ void AppsView::OnAddAppRequested()
 
   if (dialog.RequiresDownload()) {
     Repository repo = ExtractRepoFromUrl(dialog.Path());
-    ApiHandler::GetLatestRelease(
-        repo,
-        [this, repo](const QString& release, QVector<ReleaseAsset> assets) {
-          OnLatestReleaseFound(repo, release, assets);
-        });
+    ApiHandler::Instance().GetLatestRelease(repo);
     return;
   }
 

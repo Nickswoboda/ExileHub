@@ -20,12 +20,14 @@ public:
   ~AppsView();
 
 private:
-  void OnLatestReleaseFound(const Repository& repo, const QString& release,
-                            const QVector<ReleaseAsset>& assets);
-  void OnAssetDownloaded(const Repository& repo, const QString& file_path);
   Ui::AppsView* ui;
 
   AppManager& app_manager_;
+private slots:
+  void OnLatestReleaseFound(const Repository& repo, const QString& release,
+                            const QVector<ReleaseAsset>& assets);
+  void OnAssetDownloadComplete(const Repository& repo,
+                               const QString& file_path);
 
 public slots:
   void OnAddAppRequested();

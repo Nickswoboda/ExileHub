@@ -2,37 +2,41 @@
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QObject>
 #include <QString>
 #include <QVector>
-#include <functional>
 
 struct Repository {
   QString author_;
   QString name_;
 };
 
+// so I can use with QVariant::fromValue
+Q_DECLARE_METATYPE(Repository)
+
 struct ReleaseAsset {
   QString name_;
   int id_;
 };
 
-class ApiHandler
+class ApiHandler : public QObject
 {
+  Q_OBJECT
 public:
-  static void GetLatestRelease(
-      const Repository& repo,
-      const std::function<void(const QString&, const QVector<ReleaseAsset>&)>
-          callback);
-  static void DownloadAsset(const Repository& repo, ReleaseAsset asset,
-                            const std::function<void(const QString&)> callback);
+  static ApiHandler& Instance();
+  void GetLatestRelease(const Repository& repo);
+  void DownloadAsset(const Repository& repo, ReleaseAsset asset);
 
 private:
-  static void OnGetLatestReleaseFinished(
-      QNetworkReply* reply,
-      const std::function<void(const QString&, const QVector<ReleaseAsset>&)>
-          callback);
-  static void OnDownloadAssetFinished(
-      QNetworkReply* reply, const std::function<void(const QString&)> callback);
+  ApiHandler();
 
-  static QNetworkAccessManager network_manager_;
+  QNetworkAccessManager network_manager_;
+private slots:
+  void OnGetLatestReleaseFinished();
+  void OnDownloadAssetFinished();
+
+signals:
+  void LatestReleaseFound(const Repository& repo, const QString& release,
+                          const QVector<ReleaseAsset>& assets);
+  void AssetDownloadComplete(const Repository& repo, const QString& file_path);
 };
