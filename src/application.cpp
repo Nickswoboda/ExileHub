@@ -5,6 +5,8 @@
 #include <QProcess>
 #include <QSettings>
 
+#include "api_handler.hpp"
+
 Application::Application(int& argc, char** argv)
     : QApplication(argc, argv), system_tray_(main_window_)
 {
@@ -12,6 +14,7 @@ Application::Application(int& argc, char** argv)
   setApplicationName("ExileHub");
   setApplicationVersion("v1.0.0");
 
+  ApiHandler::Init();
   main_window_.show();
 
   connect(&auto_updater_, SIGNAL(UpdateAvailable(int)), this,

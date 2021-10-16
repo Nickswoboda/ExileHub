@@ -1,9 +1,6 @@
 #pragma once
 
 #include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QObject>
-#include <QString>
 #include <QVector>
 
 struct Repository {
@@ -11,32 +8,25 @@ struct Repository {
   QString name_;
 };
 
-// so I can use with QVariant::fromValue
-Q_DECLARE_METATYPE(Repository)
-
 struct ReleaseAsset {
   QString name_;
   int id_;
 };
 
-class ApiHandler : public QObject
+struct RepoRelease {
+  QString version_;
+  QVector<ReleaseAsset> assets_;
+};
+
+class ApiHandler
 {
-  Q_OBJECT
 public:
-  static ApiHandler& Instance();
-  void GetLatestRelease(const Repository& repo);
-  void DownloadAsset(const Repository& repo, ReleaseAsset asset);
+  static void Init();
+
+  static RepoRelease GetLatestRelease(const Repository& repo);
+  static QString DownloadAsset(const Repository& repo,
+                               const ReleaseAsset& asset);
 
 private:
-  ApiHandler();
-
-  QNetworkAccessManager network_manager_;
-private slots:
-  void OnGetLatestReleaseFinished();
-  void OnDownloadAssetFinished();
-
-signals:
-  void LatestReleaseFound(const Repository& repo, const QString& release,
-                          const QVector<ReleaseAsset>& assets);
-  void AssetDownloadComplete(const Repository& repo, const QString& file_path);
+  static QNetworkAccessManager network_manager_;
 };

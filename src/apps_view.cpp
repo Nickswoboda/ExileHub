@@ -39,67 +39,11 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
           SLOT(OnAddAppRequested()));
   connect(ui->app_list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this,
           SLOT(OnAppDoubleClicked(QListWidgetItem*)));
-
-  connect(&ApiHandler::Instance(),
-          SIGNAL(LatestReleaseFound(const Repository&, const QString&,
-                                    const QVector<ReleaseAsset>&)),
-          this,
-          SLOT(OnLatestReleaseFound(const Repository&, const QString&,
-                                    const QVector<ReleaseAsset>&)));
-  connect(&ApiHandler::Instance(),
-          SIGNAL(AssetDownloadComplete(const Repository&, const QString&)),
-          this,
-          SLOT(OnAssetDownloadComplete(const Repository&, const QString&)));
 }
 
 AppsView::~AppsView()
 {
   delete ui;
-}
-
-void AppsView::OnLatestReleaseFound(const Repository& repo,
-                                    const QString& release,
-                                    const QVector<ReleaseAsset>& assets)
-{
-  if (release.isEmpty() || assets.isEmpty()) return;
-
-  // if repo already exists, request came from checking for app update
-  // else creating new app
-
-  int asset_index = 0;
-  if (assets.size() > 1) {
-    QStringList list;
-    std::transform(assets.begin(), assets.end(), std::back_inserter(list),
-                   [](ReleaseAsset const& asset) { return asset.name_; });
-    auto selection = QInputDialog::getItem(nullptr, "Multiple assets found",
-                                           "Choose an asset", list);
-
-    asset_index = list.indexOf(selection);
-  }
-
-  ApiHandler::Instance().DownloadAsset(repo, assets[asset_index]);
-}
-
-void AppsView::OnAssetDownloadComplete(const Repository& repo,
-                                       const QString& file_path)
-{
-  QString dest_folder = "apps/" + repo.author_ + "_" + repo.name_;
-  auto executables = ExtractAndMoveFile(file_path, dest_folder);
-  if (executables.empty()) {
-    QMessageBox::critical(nullptr, "Unable to extract asset file",
-                          "Unable to extract asset file");
-    return;
-  }
-
-  QString executable = executables[0];
-  if (executables.size() > 1) {
-    auto selection = QInputDialog::getItem(nullptr, "Multiple assets found",
-                                           "Choose an asset", executables);
-
-    executable = selection;
-  }
-  auto& app = app_manager_.AddApp(executable);
-  ui->app_list->addItem(app.name_);
 }
 
 Repository ExtractRepoFromUrl(const QString& path)
@@ -138,7 +82,43 @@ void AppsView::OnAddAppRequested()
 
   if (dialog.RequiresDownload()) {
     Repository repo = ExtractRepoFromUrl(dialog.Path());
-    ApiHandler::Instance().GetLatestRelease(repo);
+    RepoRelease release = ApiHandler::GetLatestRelease(repo);
+
+    int asset_index = 0;
+    if (release.assets_.size() > 1) {
+      QStringList list;
+      std::transform(release.assets_.begin(), release.assets_.end(),
+                     std::back_inserter(list),
+                     [](ReleaseAsset const& asset) { return asset.name_; });
+      auto selection = QInputDialog::getItem(nullptr, "Multiple assets found",
+                                             "Choose an asset", list);
+
+      asset_index = list.indexOf(selection);
+    }
+
+    QString path =
+        ApiHandler::DownloadAsset(repo, release.assets_[asset_index]);
+    if (path.isEmpty()) {
+      return;
+    }
+
+    QString dest_folder = "apps/" + repo.author_ + "_" + repo.name_;
+    auto executables = ExtractAndMoveFile(path, dest_folder);
+    if (executables.empty()) {
+      QMessageBox::critical(nullptr, "Unable to extract asset file",
+                            "Unable to extract asset file");
+      return;
+    }
+
+    QString executable = executables[0];
+    if (executables.size() > 1) {
+      auto selection = QInputDialog::getItem(nullptr, "Multiple assets found",
+                                             "Choose an asset", executables);
+
+      executable = selection;
+    }
+    auto& app = app_manager_.AddApp(executable);
+    ui->app_list->addItem(app.name_);
     return;
   }
 
