@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QObject>
-#include <vector>
+#include <QVector>
 
 #include "app.hpp"
 
@@ -16,7 +16,9 @@ public:
 
   App* AppAtIndex(int index);
 
+  void RemoveApp(int index);
+
 private:
   // TODO: define Copy Ctor for App so I can create on stack
-  std::vector<App*> apps_;
+  QVector<App*> apps_;
 };

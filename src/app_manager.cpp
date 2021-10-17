@@ -1,6 +1,7 @@
 #include "app_manager.hpp"
 
 #include <QDebug>
+#include <QDir>
 
 AppManager::AppManager(QObject* parent) : QObject(parent) {}
 
@@ -24,4 +25,20 @@ App* AppManager::AppAtIndex(int index)
   }
 
   return apps_[index];
+}
+
+void AppManager::RemoveApp(int index)
+{
+  auto* app = AppAtIndex(index);
+
+  if (!app->repo_.author_.isEmpty()) {
+    QDir folder("apps/" + app->repo_.author_ + '_' + app->repo_.name_);
+    qDebug() << folder.exists();
+    if (folder.exists()) {
+      folder.removeRecursively();
+    }
+  }
+
+  apps_.remove(index);
+  delete app;
 }

@@ -44,9 +44,13 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
   ui->app_list->setContextMenuPolicy(Qt::ActionsContextMenu);
 
   auto update_action = new QAction("Update", this);
+  auto remove_action = new QAction("Delete", this);
   connect(update_action, SIGNAL(triggered()), this,
           SLOT(OnAppUpdateRequested()));
+  connect(remove_action, SIGNAL(triggered()), this,
+          SLOT(OnAppRemoveRequested()));
   ui->app_list->addAction(update_action);
+  ui->app_list->addAction(remove_action);
 }
 
 AppsView::~AppsView()
@@ -201,6 +205,18 @@ void AppsView::OnAppUpdateRequested()
 
   app->executable_path_ = app_path;
   app->version_ = release.version_;
+}
+
+void AppsView::OnAppRemoveRequested()
+{
+  auto items = ui->app_list->selectedItems();
+  if (items.empty()) {
+    return;
+  }
+  int index = ui->app_list->row(items[0]);
+
+  app_manager_.RemoveApp(index);
+  delete items[0];
 }
 
 void AppsView::OnAppDoubleClicked(QListWidgetItem* item)
