@@ -3,6 +3,8 @@
 #include <QProcess>
 #include <QString>
 
+#include "api_handler.hpp"
+
 class DetachableProcess : public QProcess
 {
 public:
@@ -25,6 +27,8 @@ public:
   DetachableProcess process_;
   QString name_;
   QString executable_path_;
+  Repository repo_;
+  QString version_;
   bool auto_check_updates_ = false;
   // Determines whether or not the app will close when ExileHub closes, or if it
   // will detach into it's own process

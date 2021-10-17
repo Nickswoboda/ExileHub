@@ -24,7 +24,12 @@ private:
 
   AppManager& app_manager_;
 
+  int GetSelectedAssetIndex(const RepoRelease& release) const;
+  QString DownloadAndExtractAsset(const Repository& repo,
+                                  const ReleaseAsset& asset);
+
 public slots:
   void OnAddAppRequested();
+  void OnAppUpdateRequested();
   void OnAppDoubleClicked(QListWidgetItem* item);
 };
