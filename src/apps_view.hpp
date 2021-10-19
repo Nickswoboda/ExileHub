@@ -32,5 +32,6 @@ public slots:
   void OnAddAppRequested();
   void OnAppUpdateRequested();
   void OnAppRemoveRequested();
+  void OnAppShowRequested();
   void OnAppDoubleClicked(QListWidgetItem* item);
 };

@@ -23,6 +23,7 @@ public:
 
   bool Run();
   bool Stop();
+  void Show();
 
   DetachableProcess process_;
   QString name_;

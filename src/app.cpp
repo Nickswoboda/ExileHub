@@ -1,5 +1,8 @@
 #include "app.hpp"
 
+#include <WinUser.h>
+#include <windows.h>
+
 #include <QFileInfo>
 
 App::App(const QString& executable_path) : executable_path_(executable_path)
@@ -35,6 +38,30 @@ bool App::Stop()
 {
   process_.kill();
   return process_.state() != QProcess::ProcessState::Running;
+}
+
+BOOL CALLBACK enum_windows_callback(HWND handle, LPARAM lParam)
+{
+  QProcess* process = (QProcess*)lParam;
+
+  unsigned long process_id = 0;
+
+  GetWindowThreadProcessId(handle, &process_id);
+
+  if (process_id == process->processId()) {
+    if (GetWindow(handle, GW_OWNER) == (HWND)0 && IsWindowVisible(handle)) {
+      auto success = ShowWindow(handle, SW_NORMAL);
+      qDebug() << success;
+    }
+  }
+  return true;
+}
+void App::Show()
+{
+  if (process_.state() != QProcess::NotRunning) {
+    EnumWindows(&enum_windows_callback, (LPARAM)&process_);
+    qDebug() << process_.processId();
+  }
 }
 
 DetachableProcess::DetachableProcess(QObject* parent) : QProcess(parent) {}

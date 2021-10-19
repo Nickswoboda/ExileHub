@@ -45,12 +45,13 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
 
   auto update_action = new QAction("Update", this);
   auto remove_action = new QAction("Delete", this);
+  auto show_action = new QAction("Show", this);
   connect(update_action, SIGNAL(triggered()), this,
           SLOT(OnAppUpdateRequested()));
   connect(remove_action, SIGNAL(triggered()), this,
           SLOT(OnAppRemoveRequested()));
-  ui->app_list->addAction(update_action);
-  ui->app_list->addAction(remove_action);
+  connect(show_action, SIGNAL(triggered()), this, SLOT(OnAppShowRequested()));
+  ui->app_list->addActions({update_action, remove_action, show_action});
 }
 
 AppsView::~AppsView()
@@ -177,7 +178,7 @@ void AppsView::OnAppUpdateRequested()
   }
   int index = ui->app_list->row(items[0]);
   auto* app = app_manager_.AppAtIndex(index);
-  app->version_ = "";
+
   RepoRelease release = ApiHandler::GetLatestRelease(app->repo_);
 
   if (release.version_ == app->version_) {
@@ -217,6 +218,17 @@ void AppsView::OnAppRemoveRequested()
 
   app_manager_.RemoveApp(index);
   delete items[0];
+}
+
+void AppsView::OnAppShowRequested()
+{
+  auto items = ui->app_list->selectedItems();
+  if (items.empty()) {
+    return;
+  }
+  int index = ui->app_list->row(items[0]);
+  auto* app = app_manager_.AppAtIndex(index);
+  app->Show();
 }
 
 void AppsView::OnAppDoubleClicked(QListWidgetItem* item)
