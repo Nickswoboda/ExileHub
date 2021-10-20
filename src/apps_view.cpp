@@ -46,12 +46,16 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
   auto update_action = new QAction("Update", this);
   auto remove_action = new QAction("Delete", this);
   auto show_action = new QAction("Show", this);
+  auto minimize_action = new QAction("Minimize", this);
   connect(update_action, SIGNAL(triggered()), this,
           SLOT(OnAppUpdateRequested()));
   connect(remove_action, SIGNAL(triggered()), this,
           SLOT(OnAppRemoveRequested()));
   connect(show_action, SIGNAL(triggered()), this, SLOT(OnAppShowRequested()));
-  ui->app_list->addActions({update_action, remove_action, show_action});
+  connect(minimize_action, SIGNAL(triggered()), this,
+          SLOT(OnAppMinimizeRequested()));
+  ui->app_list->addActions(
+      {update_action, remove_action, show_action, minimize_action});
 }
 
 AppsView::~AppsView()
@@ -229,6 +233,17 @@ void AppsView::OnAppShowRequested()
   int index = ui->app_list->row(items[0]);
   auto* app = app_manager_.AppAtIndex(index);
   app->Show();
+}
+
+void AppsView::OnAppMinimizeRequested()
+{
+  auto items = ui->app_list->selectedItems();
+  if (items.empty()) {
+    return;
+  }
+  int index = ui->app_list->row(items[0]);
+  auto* app = app_manager_.AppAtIndex(index);
+  app->Minimize();
 }
 
 void AppsView::OnAppDoubleClicked(QListWidgetItem* item)

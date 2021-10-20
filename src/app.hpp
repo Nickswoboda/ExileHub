@@ -24,6 +24,7 @@ public:
   bool Run();
   bool Stop();
   void Show();
+  void Minimize();
 
   DetachableProcess process_;
   QString name_;

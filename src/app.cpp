@@ -1,6 +1,5 @@
 #include "app.hpp"
 
-#include <WinUser.h>
 #include <windows.h>
 
 #include <QFileInfo>
@@ -40,7 +39,7 @@ bool App::Stop()
   return process_.state() != QProcess::ProcessState::Running;
 }
 
-BOOL CALLBACK enum_windows_callback(HWND handle, LPARAM lParam)
+BOOL CALLBACK windows_show_callback(HWND handle, LPARAM lParam)
 {
   QProcess* process = (QProcess*)lParam;
 
@@ -56,11 +55,36 @@ BOOL CALLBACK enum_windows_callback(HWND handle, LPARAM lParam)
   }
   return true;
 }
+
+BOOL CALLBACK windows_minimize_callback(HWND handle, LPARAM lParam)
+{
+  QProcess* process = (QProcess*)lParam;
+
+  unsigned long process_id = 0;
+
+  GetWindowThreadProcessId(handle, &process_id);
+
+  if (process_id == process->processId()) {
+    if (GetWindow(handle, GW_OWNER) == (HWND)0 && IsWindowVisible(handle)) {
+      auto success = ShowWindow(handle, SW_MINIMIZE);
+      qDebug() << success;
+    }
+  }
+  return true;
+}
 void App::Show()
 {
   if (process_.state() != QProcess::NotRunning) {
-    EnumWindows(&enum_windows_callback, (LPARAM)&process_);
-    qDebug() << process_.processId();
+    EnumWindows(&windows_show_callback, (LPARAM)&process_);
+    qDebug() << "show";
+  }
+}
+
+void App::Minimize()
+{
+  if (process_.state() != QProcess::NotRunning) {
+    EnumWindows(&windows_minimize_callback, (LPARAM)&process_);
+    qDebug() << "minimize";
   }
 }
 
