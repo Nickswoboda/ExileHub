@@ -33,10 +33,15 @@ bool App::Run()
   return process_.open();
 }
 
+bool App::IsRunning() const
+{
+  return process_.state() != QProcess::ProcessState::NotRunning;
+}
+
 bool App::Stop()
 {
   process_.kill();
-  return process_.state() != QProcess::ProcessState::Running;
+  return IsRunning();
 }
 
 BOOL CALLBACK windows_show_callback(HWND handle, LPARAM lParam)

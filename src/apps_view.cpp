@@ -56,6 +56,13 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
           SLOT(OnAppMinimizeRequested()));
   ui->app_list->addActions(
       {update_action, remove_action, show_action, minimize_action});
+
+  int i = 0;
+  auto* app = app_manager.AppAtIndex(i);
+  while (app) {
+    ui->app_list->addItem(app->name_);
+    app = app_manager.AppAtIndex(++i);
+  }
 }
 
 AppsView::~AppsView()
@@ -251,7 +258,7 @@ void AppsView::OnAppDoubleClicked(QListWidgetItem* item)
   int index = ui->app_list->row(item);
   auto* app = app_manager_.AppAtIndex(index);
   if (app != nullptr) {
-    if (app->process_.state() == QProcess::ProcessState::Running) {
+    if (app->IsRunning()) {
       app->Stop();
     } else {
       app->Run();

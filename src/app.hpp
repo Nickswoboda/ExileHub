@@ -22,11 +22,11 @@ public:
   ~App();
 
   bool Run();
+  bool IsRunning() const;
   bool Stop();
   void Show();
   void Minimize();
 
-  DetachableProcess process_;
   QString name_;
   QString executable_path_;
   Repository repo_;
@@ -35,4 +35,7 @@ public:
   // Determines whether or not the app will close when ExileHub closes, or if it
   // will detach into it's own process
   bool detach_on_exit_ = false;
+
+private:
+  DetachableProcess process_;
 };

@@ -19,6 +19,9 @@ public:
   void RemoveApp(int index);
 
 private:
+  void Load();
+  void Save();
+
   // TODO: define Copy Ctor for App so I can create on stack
   QVector<App*> apps_;
 };
