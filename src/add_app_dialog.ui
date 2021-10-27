@@ -59,13 +59,6 @@
     <item row="2" column="1">
      <widget class="QLineEdit" name="path_edit"/>
     </item>
-    <item row="1" column="0">
-     <widget class="QCheckBox" name="manual_checkbox">
-      <property name="text">
-       <string>Manual</string>
-      </property>
-     </widget>
-    </item>
     <item row="3" column="0">
      <widget class="QCheckBox" name="detached_checkbox">
       <property name="text">
@@ -77,6 +70,26 @@
      <widget class="QCheckBox" name="update_checkbox">
       <property name="text">
        <string>Check for updates</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QRadioButton" name="local_radio">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>Local</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QRadioButton" name="github_radio">
+      <property name="text">
+       <string>GitHub</string>
       </property>
      </widget>
     </item>

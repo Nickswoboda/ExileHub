@@ -15,7 +15,7 @@ AddAppDialog::~AddAppDialog()
 
 bool AddAppDialog::RequiresDownload() const
 {
-  return !ui->manual_checkbox->isChecked();
+  return ui->github_radio->isChecked();
 }
 
 QString AddAppDialog::Path() const
