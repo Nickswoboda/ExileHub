@@ -17,6 +17,7 @@ public:
 
   bool RequiresDownload() const;
   QString Path() const;
+  QString Name() const;
 
 private:
   Ui::AddAppDialog* ui;

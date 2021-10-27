@@ -20,5 +20,10 @@ bool AddAppDialog::RequiresDownload() const
 
 QString AddAppDialog::Path() const
 {
-  return ui->path_edit->text();
+    return ui->path_edit->text();
+}
+
+QString AddAppDialog::Name() const
+{
+    return ui->name_edit->text();
 }

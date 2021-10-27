@@ -17,7 +17,6 @@ class App
 {
 public:
   explicit App(const QString& executable_path);
-  App(const QString& name, const QString& executable_path);
 
   ~App();
 

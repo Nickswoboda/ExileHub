@@ -175,6 +175,10 @@ void AppsView::OnAddAppRequested()
   }
 
   auto& app = app_manager_.AddApp(app_path);
+
+  if (!dialog.Name().isEmpty()){
+      app.name_ = dialog.Name();
+  }
   ui->app_list->addItem(app.name_);
   app.repo_ = repo;
   app.version_ = release.version_;
