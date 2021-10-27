@@ -31,6 +31,7 @@ public:
   Repository repo_;
   QString version_;
   bool auto_check_updates_ = false;
+  bool auto_start_ = false;
   // Determines whether or not the app will close when ExileHub closes, or if it
   // will detach into it's own process
   bool detach_on_exit_ = false;

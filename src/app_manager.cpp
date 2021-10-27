@@ -68,6 +68,8 @@ void AppManager::Load()
     app.repo_.author_ = json_obj["repo author"].toString();
     app.repo_.name_ = json_obj["repo name"].toString();
     app.version_ = json_obj["version"].toString();
+    app.auto_check_updates_ = json_obj["auto update"].toBool();
+    app.auto_start_ = json_obj["auto start"].toBool();
   }
 }
 
@@ -86,6 +88,8 @@ void AppManager::Save()
     json_obj["repo author"] = app->repo_.author_;
     json_obj["repo name"] = app->repo_.name_;
     json_obj["version"] = app->version_;
+    json_obj["auto start"] = app->auto_start_;
+    json_obj["auto update"] = app->auto_check_updates_;
     json_arr.push_back(json_obj);
   }
 

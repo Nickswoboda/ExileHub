@@ -61,6 +61,17 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
   auto* app = app_manager.AppAtIndex(i);
   while (app) {
     ui->app_list->addItem(app->name_);
+
+    if (app->auto_check_updates_){
+        ui->app_list->setCurrentRow(i, QItemSelectionModel::SelectionFlag::Select);
+        OnAppUpdateRequested();
+        ui->app_list->setCurrentRow(i, QItemSelectionModel::SelectionFlag::Deselect);
+    }
+
+    if (app->auto_start_){
+        app->Run();
+    }
+
     app = app_manager.AppAtIndex(++i);
   }
 }
@@ -183,6 +194,8 @@ void AppsView::OnAddAppRequested()
   app.repo_ = repo;
   app.version_ = release.version_;
   app.detach_on_exit_ = false;
+  app.auto_check_updates_ = dialog.AutoUpdate();
+  app.auto_start_ = dialog.AutoStart();
 }
 
 void AppsView::OnAppUpdateRequested()
