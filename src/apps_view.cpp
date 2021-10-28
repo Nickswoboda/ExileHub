@@ -1,4 +1,5 @@
 #include "apps_view.hpp"
+#include "ui_apps_view.h"
 
 #include <quazip/JlCompress.h>
 
@@ -9,7 +10,7 @@
 
 #include "add_app_dialog.hpp"
 #include "api_handler.hpp"
-#include "ui_apps_view.h"
+#include "app_card.hpp"
 
 QStringList ExtractAndMoveFile(const QString& file, const QString& dest_path)
 {
@@ -38,34 +39,15 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
 
   connect(ui->add_app_button, SIGNAL(clicked(bool)), this,
           SLOT(OnAddAppRequested()));
-  connect(ui->app_list, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this,
-          SLOT(OnAppDoubleClicked(QListWidgetItem*)));
-
-  ui->app_list->setContextMenuPolicy(Qt::ActionsContextMenu);
-
-  auto update_action = new QAction("Update", this);
-  auto remove_action = new QAction("Delete", this);
-  auto show_action = new QAction("Show", this);
-  auto minimize_action = new QAction("Minimize", this);
-  connect(update_action, SIGNAL(triggered()), this,
-          SLOT(OnAppUpdateRequested()));
-  connect(remove_action, SIGNAL(triggered()), this,
-          SLOT(OnAppRemoveRequested()));
-  connect(show_action, SIGNAL(triggered()), this, SLOT(OnAppShowRequested()));
-  connect(minimize_action, SIGNAL(triggered()), this,
-          SLOT(OnAppMinimizeRequested()));
-  ui->app_list->addActions(
-      {update_action, remove_action, show_action, minimize_action});
 
   int i = 0;
   auto* app = app_manager.AppAtIndex(i);
   while (app) {
-    ui->app_list->addItem(app->name_);
+      AppCard* card = new AppCard(*app, this);
+    ui->app_card_vbox->addWidget(card);
 
     if (app->auto_check_updates_){
-        ui->app_list->setCurrentRow(i, QItemSelectionModel::SelectionFlag::Select);
-        OnAppUpdateRequested();
-        ui->app_list->setCurrentRow(i, QItemSelectionModel::SelectionFlag::Deselect);
+      //card->Update();
     }
 
     if (app->auto_start_){
@@ -190,7 +172,9 @@ void AppsView::OnAddAppRequested()
   if (!dialog.Name().isEmpty()){
       app.name_ = dialog.Name();
   }
-  ui->app_list->addItem(app.name_);
+  AppCard* card = new AppCard(app, this);
+ui->app_card_vbox->addWidget(card);
+
   app.repo_ = repo;
   app.version_ = release.version_;
   app.detach_on_exit_ = false;
@@ -198,7 +182,7 @@ void AppsView::OnAddAppRequested()
   app.auto_start_ = dialog.AutoStart();
 }
 
-void AppsView::OnAppUpdateRequested()
+/*void AppsView::OnAppUpdateRequested()
 {
   auto items = ui->app_list->selectedItems();
   if (items.empty()) {
@@ -247,9 +231,9 @@ void AppsView::OnAppUpdateRequested()
   if (result == QMessageBox::Yes){
       app->Run();
   }
-}
+}*/
 
-void AppsView::OnAppRemoveRequested()
+/*void AppsView::OnAppRemoveRequested()
 {
   auto items = ui->app_list->selectedItems();
   if (items.empty()) {
@@ -259,39 +243,4 @@ void AppsView::OnAppRemoveRequested()
 
   app_manager_.RemoveApp(index);
   delete items[0];
-}
-
-void AppsView::OnAppShowRequested()
-{
-  auto items = ui->app_list->selectedItems();
-  if (items.empty()) {
-    return;
-  }
-  int index = ui->app_list->row(items[0]);
-  auto* app = app_manager_.AppAtIndex(index);
-  app->Show();
-}
-
-void AppsView::OnAppMinimizeRequested()
-{
-  auto items = ui->app_list->selectedItems();
-  if (items.empty()) {
-    return;
-  }
-  int index = ui->app_list->row(items[0]);
-  auto* app = app_manager_.AppAtIndex(index);
-  app->Minimize();
-}
-
-void AppsView::OnAppDoubleClicked(QListWidgetItem* item)
-{
-  int index = ui->app_list->row(item);
-  auto* app = app_manager_.AppAtIndex(index);
-  if (app != nullptr) {
-    if (app->IsRunning()) {
-      app->Stop();
-    } else {
-      app->Run();
-    }
-  }
-}
+} */

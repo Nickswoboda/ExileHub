@@ -42,6 +42,9 @@ set(PROJECT_SOURCES
         src/apps_view.ui
         src/api_handler.cpp
         src/api_handler.hpp
+        src/app_card.hpp
+        src/app_card.cpp
+        src/app_card.ui
         assets/assets.qrc
 
 )

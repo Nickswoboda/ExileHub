@@ -24,7 +24,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QListWidget" name="app_list"/>
+      <layout class="QVBoxLayout" name="app_card_vbox"/>
      </item>
     </layout>
    </item>

@@ -88,6 +88,11 @@ void App::Minimize()
   }
 }
 
+void App::Update()
+{
+
+}
+
 DetachableProcess::DetachableProcess(QObject* parent) : QProcess(parent) {}
 
 void DetachableProcess::Detach()

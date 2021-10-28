@@ -25,6 +25,7 @@ public:
   bool Stop();
   void Show();
   void Minimize();
+  void Update();
 
   QString name_;
   QString executable_path_;
