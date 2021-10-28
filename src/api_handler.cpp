@@ -76,6 +76,7 @@ RepoRelease ApiHandler::GetLatestRelease(const Repository& repo)
 QString ApiHandler::DownloadAsset(const Repository& repo,
                                   const ReleaseAsset& asset)
 {
+    Init(); //temp, needed until I extract AppManager out of mainwindow, so that I can make sure init is called before auto-updating.
   QUrl asset_url("https://api.github.com/repos/" + repo.author_ + "/" +
                  repo.name_ + "/releases/assets/" + QString::number(asset.id_));
   QNetworkRequest request(asset_url);

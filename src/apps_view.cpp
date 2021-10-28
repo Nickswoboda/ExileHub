@@ -207,6 +207,10 @@ void AppsView::OnAppUpdateRequested()
   int index = ui->app_list->row(items[0]);
   auto* app = app_manager_.AppAtIndex(index);
 
+  if (app->repo_.name_.isEmpty()){
+      return;
+  }
+
   RepoRelease release = ApiHandler::GetLatestRelease(app->repo_);
 
   if (release.version_ == app->version_) {
@@ -215,8 +219,8 @@ void AppsView::OnAppUpdateRequested()
   }
   // should probably warn about potentially losing settings
   auto result = QMessageBox::question(
-      nullptr, "", "A new version is available, would you like to update?\n");
-  if (result != QMessageBox::Yes) {
+      nullptr, "", "A new version of " + app->name_ + " is available, would you like to update?\n The current version will be removed and you may lose your settings");
+  if (result == QMessageBox::No) {
     return;
   }
 
@@ -232,8 +236,17 @@ void AppsView::OnAppUpdateRequested()
   QString app_path =
       DownloadAndExtractAsset(app->repo_, release.assets_[asset_index]);
 
+  if (app_path.isEmpty()){
+      QMessageBox::critical(nullptr, "", "Unable to download or extract update.\n Please try again later.");
+      return;
+  }
   app->executable_path_ = app_path;
   app->version_ = release.version_;
+
+  result = QMessageBox::question(nullptr, "", "Update Complete. Would you like to open " + app->name_ + " ?");
+  if (result == QMessageBox::Yes){
+      app->Run();
+  }
 }
 
 void AppsView::OnAppRemoveRequested()
