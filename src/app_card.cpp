@@ -12,7 +12,11 @@ AppCard::AppCard(App& app, QWidget *parent) :
     ui->name_label->setText(app_.name_);
 
     setContextMenuPolicy(Qt::ActionsContextMenu);
-    addActions({ui->action_update, ui->action_edit, ui->action_remove});
+    addActions({ui->action_edit, ui->action_remove});
+
+    if (!app_.repo_.author_.isEmpty()){
+        addAction(ui->action_update);
+    }
 }
 
 
@@ -53,7 +57,7 @@ void AppCard::on_action_edit_triggered()
 
 void AppCard::on_action_update_triggered()
 {
-    app_.Run();
+   emit AppUpdateRequested();
 }
 
 

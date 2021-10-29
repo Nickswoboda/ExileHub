@@ -115,6 +115,7 @@ void AppsView::InsertAppCard(App* app)
   ui->app_card_vbox->addWidget(card);
 
   connect(card, SIGNAL(RemoveAppRequested()), this, SLOT(OnRemoveAppRequested()));
+  connect(card, SIGNAL(AppUpdateRequested()), this, SLOT(OnAppUpdateRequested()));
 }
 
 Repository ExtractRepoFromUrl(const QString& path)
@@ -203,13 +204,11 @@ void AppsView::OnRemoveAppRequested()
     app_card->deleteLater();
 }
 
-/*void AppsView::OnAppUpdateRequested()
+void AppsView::OnAppUpdateRequested()
 {
-  auto items = ui->app_list->selectedItems();
-  if (items.empty()) {
-    return;
-  }
-  int index = ui->app_list->row(items[0]);
+    auto* app_card = static_cast<AppCard*>(sender());
+    int index = ui->app_card_vbox->indexOf(app_card);
+
   auto* app = app_manager_.AppAtIndex(index);
 
   if (app->repo_.name_.isEmpty()){
@@ -252,4 +251,4 @@ void AppsView::OnRemoveAppRequested()
   if (result == QMessageBox::Yes){
       app->Run();
   }
-}*/
+}

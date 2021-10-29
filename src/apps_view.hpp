@@ -32,4 +32,5 @@ private:
 public slots:
   void OnAddAppRequested();
   void OnRemoveAppRequested();
+  void OnAppUpdateRequested();
 };

@@ -18,6 +18,7 @@ public:
 
 signals:
     void RemoveAppRequested();
+    void AppUpdateRequested();
 private slots:
     void on_start_button_clicked(bool checked);
 
