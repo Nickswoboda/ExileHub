@@ -59,6 +59,6 @@ void AppCard::on_action_update_triggered()
 
 void AppCard::on_action_remove_triggered()
 {
-    app_.Run();
+    emit RemoveAppRequested();
 }
 

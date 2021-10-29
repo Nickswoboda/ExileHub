@@ -43,8 +43,7 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
   int i = 0;
   auto* app = app_manager.AppAtIndex(i);
   while (app) {
-      AppCard* card = new AppCard(*app, this);
-    ui->app_card_vbox->addWidget(card);
+      InsertAppCard(app);
 
     if (app->auto_check_updates_){
       //card->Update();
@@ -110,6 +109,14 @@ QString AppsView::DownloadAndExtractAsset(const Repository& repo,
   return executable;
 }
 
+void AppsView::InsertAppCard(App* app)
+{
+  AppCard* card = new AppCard(*app, this);
+  ui->app_card_vbox->addWidget(card);
+
+  connect(card, SIGNAL(RemoveAppRequested()), this, SLOT(OnRemoveAppRequested()));
+}
+
 Repository ExtractRepoFromUrl(const QString& path)
 {
   int index = path.indexOf("github.com/");
@@ -172,14 +179,28 @@ void AppsView::OnAddAppRequested()
   if (!dialog.Name().isEmpty()){
       app.name_ = dialog.Name();
   }
-  AppCard* card = new AppCard(app, this);
-ui->app_card_vbox->addWidget(card);
+
+  InsertAppCard(&app);
 
   app.repo_ = repo;
   app.version_ = release.version_;
   app.detach_on_exit_ = false;
   app.auto_check_updates_ = dialog.AutoUpdate();
   app.auto_start_ = dialog.AutoStart();
+}
+
+void AppsView::OnRemoveAppRequested()
+{
+    auto* app_card = static_cast<AppCard*>(sender());
+    int index = ui->app_card_vbox->indexOf(app_card);
+
+    if (index == -1){
+        return;
+    }
+
+    app_manager_.RemoveApp(index);
+    ui->app_card_vbox->removeWidget(app_card);
+    app_card->deleteLater();
 }
 
 /*void AppsView::OnAppUpdateRequested()
@@ -232,15 +253,3 @@ ui->app_card_vbox->addWidget(card);
       app->Run();
   }
 }*/
-
-/*void AppsView::OnAppRemoveRequested()
-{
-  auto items = ui->app_list->selectedItems();
-  if (items.empty()) {
-    return;
-  }
-  int index = ui->app_list->row(items[0]);
-
-  app_manager_.RemoveApp(index);
-  delete items[0];
-} */

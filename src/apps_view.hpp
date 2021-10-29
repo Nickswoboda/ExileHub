@@ -27,7 +27,9 @@ private:
   int GetSelectedAssetIndex(const RepoRelease& release) const;
   QString DownloadAndExtractAsset(const Repository& repo,
                                   const ReleaseAsset& asset);
+  void InsertAppCard(App* app);
 
 public slots:
   void OnAddAppRequested();
+  void OnRemoveAppRequested();
 };

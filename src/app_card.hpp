@@ -16,6 +16,8 @@ public:
     explicit AppCard(App& app, QWidget *parent = nullptr);
     ~AppCard();
 
+signals:
+    void RemoveAppRequested();
 private slots:
     void on_start_button_clicked(bool checked);
 
