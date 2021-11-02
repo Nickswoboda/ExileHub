@@ -93,6 +93,17 @@ void App::Update()
 
 }
 
+void App::SetExecutablePath(const QString &path)
+{
+    executable_path_ = path;
+    process_.setProgram(path);
+}
+
+QString App::ExecutablePath() const
+{
+    return executable_path_;
+}
+
 DetachableProcess::DetachableProcess(QObject* parent) : QProcess(parent) {}
 
 void DetachableProcess::Detach()

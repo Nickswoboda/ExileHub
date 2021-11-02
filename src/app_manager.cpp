@@ -70,6 +70,7 @@ void AppManager::Load()
     app.version_ = json_obj["version"].toString();
     app.auto_check_updates_ = json_obj["auto update"].toBool();
     app.auto_start_ = json_obj["auto start"].toBool();
+     app.detach_on_exit_ = json_obj["detach"].toBool();
   }
 }
 
@@ -83,13 +84,14 @@ void AppManager::Save()
   QJsonArray json_arr;
   for (auto* app : apps_) {
     QJsonObject json_obj;
-    json_obj["path"] = app->executable_path_;
+    json_obj["path"] = app->ExecutablePath();
     json_obj["name"] = app->name_;
     json_obj["repo author"] = app->repo_.author_;
     json_obj["repo name"] = app->repo_.name_;
     json_obj["version"] = app->version_;
     json_obj["auto start"] = app->auto_start_;
     json_obj["auto update"] = app->auto_check_updates_;
+        json_obj["detach"] = app->detach_on_exit_;
     json_arr.push_back(json_obj);
   }
 

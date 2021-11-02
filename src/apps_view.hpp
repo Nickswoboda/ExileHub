@@ -24,6 +24,7 @@ private:
 
   AppManager& app_manager_;
 
+  void CheckForUpdates(App& app);
   int GetSelectedAssetIndex(const RepoRelease& release) const;
   QString DownloadAndExtractAsset(const Repository& repo,
                                   const ReleaseAsset& asset);

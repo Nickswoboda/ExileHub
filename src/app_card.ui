@@ -54,14 +54,6 @@
     </layout>
    </item>
   </layout>
-  <action name="action_edit">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Edit</string>
-   </property>
-  </action>
   <action name="action_update">
    <property name="text">
     <string>Update</string>
@@ -70,6 +62,40 @@
   <action name="action_remove">
    <property name="text">
     <string>Remove</string>
+   </property>
+  </action>
+  <action name="action_rename">
+   <property name="text">
+    <string>Rename</string>
+   </property>
+  </action>
+  <action name="action_edit_path">
+   <property name="text">
+    <string>Edit Path</string>
+   </property>
+  </action>
+  <action name="action_auto_update">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Auto Update</string>
+   </property>
+  </action>
+  <action name="action_detach_on_close">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Detach On Close</string>
+   </property>
+  </action>
+  <action name="action_auto_start">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Auto Start</string>
    </property>
   </action>
  </widget>

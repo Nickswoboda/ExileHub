@@ -28,11 +28,19 @@ private slots:
 
     void on_max_button_clicked(bool checked);
 
-    void on_action_edit_triggered();
-
     void on_action_update_triggered();
 
     void on_action_remove_triggered();
+
+    void on_action_rename_triggered();
+
+    void on_action_edit_path_triggered();
+
+    void on_action_auto_start_triggered(bool checked);
+
+    void on_action_auto_update_triggered(bool checked);
+
+    void on_action_detach_on_close_triggered(bool checked);
 
 private:
     Ui::AppCard *ui;

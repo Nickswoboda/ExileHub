@@ -27,8 +27,10 @@ public:
   void Minimize();
   void Update();
 
+  void SetExecutablePath(const QString& path);
+  QString ExecutablePath() const;
+
   QString name_;
-  QString executable_path_;
   Repository repo_;
   QString version_;
   bool auto_check_updates_ = false;
@@ -39,4 +41,5 @@ public:
 
 private:
   DetachableProcess process_;
+  QString executable_path_;
 };
