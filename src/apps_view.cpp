@@ -1,5 +1,4 @@
 #include "apps_view.hpp"
-#include "ui_apps_view.h"
 
 #include <quazip/JlCompress.h>
 
@@ -11,6 +10,7 @@
 #include "add_app_dialog.hpp"
 #include "api_handler.hpp"
 #include "app_card.hpp"
+#include "ui_apps_view.h"
 
 QStringList ExtractAndMoveFile(const QString& file, const QString& dest_path)
 {
@@ -43,14 +43,14 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
   int i = 0;
   auto* app = app_manager.AppAtIndex(i);
   while (app) {
-      InsertAppCard(app);
+    InsertAppCard(app);
 
-    if (app->auto_check_updates_){
+    if (app->auto_check_updates_) {
       CheckForUpdates(*app);
     }
 
-    if (app->auto_start_){
-        app->Run();
+    if (app->auto_start_) {
+      app->Run();
     }
 
     app = app_manager.AppAtIndex(++i);
@@ -59,51 +59,58 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
 
 AppsView::~AppsView()
 {
-    delete ui;
+  delete ui;
 }
 
-void AppsView::CheckForUpdates(App &app)
+void AppsView::CheckForUpdates(App& app)
 {
-    if (app.repo_.name_.isEmpty()){
-        return;
-    }
+  if (app.repo_.name_.isEmpty()) {
+    return;
+  }
 
-    RepoRelease release = ApiHandler::GetLatestRelease(app.repo_);
+  RepoRelease release = ApiHandler::GetLatestRelease(app.repo_);
 
-    if (release.version_ == app.version_) {
-      QMessageBox::information(nullptr, "", "The app is up to date");
-      return;
-    }
-    // should probably warn about potentially losing settings
-    auto result = QMessageBox::question(
-        nullptr, "", "A new version of " + app.name_ + " is available, would you like to update?\n The current version will be removed and you may lose your settings");
-    if (result == QMessageBox::No) {
-      return;
-    }
+  if (release.version_ == app.version_) {
+    QMessageBox::information(nullptr, "", "The app is up to date");
+    return;
+  }
+  // should probably warn about potentially losing settings
+  auto result = QMessageBox::question(
+      nullptr, "",
+      "A new version of " + app.name_ +
+          " is available, would you like to update?\n The current version will "
+          "be removed and you may lose your settings");
+  if (result == QMessageBox::No) {
+    return;
+  }
 
-    app.Stop();
+  app.Stop();
 
-    if (release.assets_.isEmpty()) {
-      qDebug() << "No release assets found";
-      return;
-    }
+  if (release.assets_.isEmpty()) {
+    qDebug() << "No release assets found";
+    return;
+  }
 
-    int asset_index = GetSelectedAssetIndex(release);
+  int asset_index = GetSelectedAssetIndex(release);
 
-    QString app_path =
-        DownloadAndExtractAsset(app.repo_, release.assets_[asset_index]);
+  QString app_path =
+      DownloadAndExtractAsset(app.repo_, release.assets_[asset_index]);
 
-    if (app_path.isEmpty()){
-        QMessageBox::critical(nullptr, "", "Unable to download or extract update.\n Please try again later.");
-        return;
-    }
-    app.SetExecutablePath(app_path);
-    app.version_ = release.version_;
+  if (app_path.isEmpty()) {
+    QMessageBox::critical(
+        nullptr, "",
+        "Unable to download or extract update.\n Please try again later.");
+    return;
+  }
+  app.SetExecutablePath(app_path);
+  app.version_ = release.version_;
 
-    result = QMessageBox::question(nullptr, "", "Update Complete. Would you like to open " + app.name_ + " ?");
-    if (result == QMessageBox::Yes){
-        app.Run();
-    }
+  result = QMessageBox::question(
+      nullptr, "",
+      "Update Complete. Would you like to open " + app.name_ + " ?");
+  if (result == QMessageBox::Yes) {
+    app.Run();
+  }
 }
 
 int AppsView::GetSelectedAssetIndex(const RepoRelease& release) const
@@ -134,7 +141,19 @@ QString AppsView::DownloadAndExtractAsset(const Repository& repo,
     return QString();
   }
 
+  QFileInfo file_info(path);
+  if (!path.endsWith(".zip") && !file_info.isExecutable()) {
+    return QString();
+  }
+
   QString dest_folder = "apps/" + repo.author_ + "_" + repo.name_;
+
+  if (file_info.isExecutable()) {
+    QFile file(path);
+    file.rename(dest_folder + "/" + file_info.fileName());
+    return file.fileName();
+  }
+
   auto executables = ExtractAndMoveFile(path, dest_folder);
   if (executables.empty()) {
     QMessageBox::critical(nullptr, "Unable to extract asset file",
@@ -158,8 +177,10 @@ void AppsView::InsertAppCard(App* app)
   AppCard* card = new AppCard(*app, this);
   ui->app_card_vbox->addWidget(card);
 
-  connect(card, SIGNAL(RemoveAppRequested()), this, SLOT(OnRemoveAppRequested()));
-  connect(card, SIGNAL(AppUpdateRequested()), this, SLOT(OnAppUpdateRequested()));
+  connect(card, SIGNAL(RemoveAppRequested()), this,
+          SLOT(OnRemoveAppRequested()));
+  connect(card, SIGNAL(AppUpdateRequested()), this,
+          SLOT(OnAppUpdateRequested()));
 }
 
 Repository ExtractRepoFromUrl(const QString& path)
@@ -221,8 +242,8 @@ void AppsView::OnAddAppRequested()
 
   auto& app = app_manager_.AddApp(app_path);
 
-  if (!dialog.Name().isEmpty()){
-      app.name_ = dialog.Name();
+  if (!dialog.Name().isEmpty()) {
+    app.name_ = dialog.Name();
   }
 
   app.repo_ = repo;
@@ -236,26 +257,24 @@ void AppsView::OnAddAppRequested()
 
 void AppsView::OnRemoveAppRequested()
 {
-    auto* app_card = static_cast<AppCard*>(sender());
-    int index = ui->app_card_vbox->indexOf(app_card);
+  auto* app_card = static_cast<AppCard*>(sender());
+  int index = ui->app_card_vbox->indexOf(app_card);
 
-    if (index == -1){
-        return;
-    }
+  if (index == -1) {
+    return;
+  }
 
-    app_manager_.RemoveApp(index);
-    ui->app_card_vbox->removeWidget(app_card);
-    app_card->deleteLater();
+  app_manager_.RemoveApp(index);
+  ui->app_card_vbox->removeWidget(app_card);
+  app_card->deleteLater();
 }
 
 void AppsView::OnAppUpdateRequested()
 {
-    auto* app_card = static_cast<AppCard*>(sender());
-    int index = ui->app_card_vbox->indexOf(app_card);
+  auto* app_card = static_cast<AppCard*>(sender());
+  int index = ui->app_card_vbox->indexOf(app_card);
 
   auto* app = app_manager_.AppAtIndex(index);
 
   CheckForUpdates(*app);
-
-
 }
