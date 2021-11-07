@@ -2,6 +2,8 @@
 
 #include <QDialog>
 
+#include "api_handler.hpp"
+
 namespace Ui
 {
 class AddAppDialog;
@@ -21,6 +23,12 @@ public:
   bool AutoUpdate() const;
   bool AutoStart() const;
   bool Detach() const;
+
+  Repository repo_;
+  RepoRelease repo_release_;
+
+public slots:
+  void accept() override;
 
 private:
   Ui::AddAppDialog* ui;

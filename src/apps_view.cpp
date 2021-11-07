@@ -183,32 +183,6 @@ void AppsView::InsertAppCard(App* app)
           SLOT(OnAppUpdateRequested()));
 }
 
-Repository ExtractRepoFromUrl(const QString& path)
-{
-  int index = path.indexOf("github.com/");
-  if (index == -1) {
-    return Repository();
-  }
-
-  Repository repo;
-  int user_index = index + 11;
-  int end_user_index = path.indexOf('/', user_index);
-  if (end_user_index == -1) {
-    return Repository();
-  }
-  repo.author_ = path.mid(user_index, end_user_index - user_index);
-
-  int name_index = end_user_index + 1;
-  int end_name_index = path.indexOf('/', name_index);
-  if (end_name_index == -1) {
-    end_name_index = path.size();
-  }
-
-  repo.name_ = path.mid(name_index, end_name_index - name_index);
-
-  return repo;
-}
-
 void AppsView::OnAddAppRequested()
 {
   AddAppDialog dialog;
@@ -217,20 +191,11 @@ void AppsView::OnAddAppRequested()
     return;
   }
 
-  Repository repo;
-  RepoRelease release;
+  Repository repo = dialog.repo_;
+  RepoRelease release = dialog.repo_release_;
 
   QString app_path = dialog.Path();
   if (dialog.RequiresDownload()) {
-    repo = ExtractRepoFromUrl(dialog.Path());
-
-    release = ApiHandler::GetLatestRelease(repo);
-
-    if (release.assets_.isEmpty()) {
-      qDebug() << "No release assets found";
-      return;
-    }
-
     int asset_index = GetSelectedAssetIndex(release);
 
     app_path = DownloadAndExtractAsset(repo, release.assets_[asset_index]);
