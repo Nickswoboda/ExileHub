@@ -3,6 +3,7 @@
 #include <QDialog>
 
 #include "api_handler.hpp"
+#include "app.hpp"
 
 namespace Ui
 {
@@ -14,7 +15,7 @@ class AddAppDialog : public QDialog
   Q_OBJECT
 
 public:
-  explicit AddAppDialog(QWidget* parent = nullptr);
+  explicit AddAppDialog(App* app = nullptr, QWidget* parent = nullptr);
   ~AddAppDialog();
 
   bool RequiresDownload() const;
@@ -32,4 +33,7 @@ public slots:
 
 private:
   Ui::AddAppDialog* ui;
+  App* app_ = nullptr;
+
+  bool InputIsValid();
 };
