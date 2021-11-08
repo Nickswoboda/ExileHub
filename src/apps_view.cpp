@@ -45,11 +45,12 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
   while (app) {
     InsertAppCard(app);
 
+    bool updated = false;
     if (app->auto_check_updates_) {
-      CheckForUpdates(*app);
+      updated = CheckForUpdates(*app);
     }
-
-    if (app->auto_start_) {
+    // if updated, user was given choice to start app
+    if (!updated && app->auto_start_) {
       app->Run();
     }
 
@@ -62,17 +63,17 @@ AppsView::~AppsView()
   delete ui;
 }
 
-void AppsView::CheckForUpdates(App& app)
+bool AppsView::CheckForUpdates(App& app)
 {
   if (app.repo_.name_.isEmpty()) {
-    return;
+    return false;
   }
 
   RepoRelease release = ApiHandler::GetLatestRelease(app.repo_);
 
   if (release.version_ == app.version_) {
     QMessageBox::information(nullptr, "", "The app is up to date");
-    return;
+    return false;
   }
   // should probably warn about potentially losing settings
   auto result = QMessageBox::question(
@@ -81,14 +82,14 @@ void AppsView::CheckForUpdates(App& app)
           " is available, would you like to update?\n The current version will "
           "be removed and you may lose your settings");
   if (result == QMessageBox::No) {
-    return;
+    return false;
   }
 
   app.Stop();
 
   if (release.assets_.isEmpty()) {
     qDebug() << "No release assets found";
-    return;
+    return false;
   }
 
   int asset_index = GetSelectedAssetIndex(release);
@@ -100,7 +101,7 @@ void AppsView::CheckForUpdates(App& app)
     QMessageBox::critical(
         nullptr, "",
         "Unable to download or extract update.\n Please try again later.");
-    return;
+    return false;
   }
   app.SetExecutablePath(app_path);
   app.version_ = release.version_;
@@ -111,6 +112,7 @@ void AppsView::CheckForUpdates(App& app)
   if (result == QMessageBox::Yes) {
     app.Run();
   }
+  return true;
 }
 
 int AppsView::GetSelectedAssetIndex(const RepoRelease& release) const
