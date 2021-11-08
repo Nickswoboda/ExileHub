@@ -1,5 +1,6 @@
 #include "add_app_dialog.hpp"
 
+#include <QDir>
 #include <QFileInfo>
 #include <QMessageBox>
 
@@ -121,6 +122,12 @@ bool AddAppDialog::InputIsValid()
   // if github, check if repository is valid, store list of aviable assets
   else {
     repo_ = ExtractRepoFromUrl(Path());
+
+    QDir dir("apps/" + repo_.author_ + "_" + repo_.name_);
+    if (dir.exists()) {
+      QMessageBox::critical(this, "", "App already exists from the repository");
+      return false;
+    }
 
     if (repo_.author_.isEmpty()) {
       QMessageBox::critical(this, "", "GitHub url is not formatted correctly");
