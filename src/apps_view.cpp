@@ -39,9 +39,17 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
 
   connect(ui->add_app_button, SIGNAL(clicked(bool)), this,
           SLOT(OnAddAppRequested()));
+}
 
+AppsView::~AppsView()
+{
+  delete ui;
+}
+
+void AppsView::Init()
+{
   int i = 0;
-  auto* app = app_manager.AppAtIndex(i);
+  auto* app = app_manager_.AppAtIndex(i);
   while (app) {
     InsertAppCard(app);
 
@@ -54,13 +62,8 @@ AppsView::AppsView(AppManager& app_manager, QWidget* parent)
       app->Run();
     }
 
-    app = app_manager.AppAtIndex(++i);
+    app = app_manager_.AppAtIndex(++i);
   }
-}
-
-AppsView::~AppsView()
-{
-  delete ui;
 }
 
 bool AppsView::CheckForUpdates(App& app)

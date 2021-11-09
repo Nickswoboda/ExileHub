@@ -19,6 +19,8 @@ public:
   explicit AppsView(AppManager& app_manager, QWidget* parent = nullptr);
   ~AppsView();
 
+  void Init();
+
 private:
   Ui::AppsView* ui;
 

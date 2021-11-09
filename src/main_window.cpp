@@ -19,6 +19,9 @@ MainWindow::MainWindow(QWidget* parent)
           SLOT(OnOptionsActionTriggered()));
   connect(ui->actionAdd_App, SIGNAL(triggered()), &apps_view_,
           SLOT(OnAddAppRequested()));
+
+  show();
+  apps_view_.Init();
 }
 
 MainWindow::~MainWindow()

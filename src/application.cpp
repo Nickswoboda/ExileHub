@@ -15,7 +15,6 @@ Application::Application(int& argc, char** argv)
   setApplicationVersion("v1.0.0");
 
   ApiHandler::Init();
-  main_window_.show();
 
   connect(&auto_updater_, SIGNAL(UpdateAvailable(int)), this,
           SLOT(OnUpdateAvailable(int)));
