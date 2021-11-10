@@ -88,20 +88,27 @@ void App::Minimize()
   }
 }
 
-void App::Update()
-{
+void App::Update() {}
 
-}
-
-void App::SetExecutablePath(const QString &path)
+void App::SetExecutablePath(const QString& path)
 {
-    executable_path_ = path;
-    process_.setProgram(path);
+  executable_path_ = path;
+  process_.setProgram(path);
 }
 
 QString App::ExecutablePath() const
 {
-    return executable_path_;
+  return executable_path_;
+}
+
+void App::SetArguments(const QStringList& args)
+{
+  process_.setArguments(args);
+}
+
+QStringList App::Arguments() const
+{
+  return process_.arguments();
 }
 
 DetachableProcess::DetachableProcess(QObject* parent) : QProcess(parent) {}

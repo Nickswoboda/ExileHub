@@ -2,6 +2,7 @@
 
 #include <QProcess>
 #include <QString>
+#include <QStringList>
 
 #include "api_handler.hpp"
 
@@ -29,6 +30,9 @@ public:
 
   void SetExecutablePath(const QString& path);
   QString ExecutablePath() const;
+
+  void SetArguments(const QStringList& args);
+  QStringList Arguments() const;
 
   QString name_;
   Repository repo_;

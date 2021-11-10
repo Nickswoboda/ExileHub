@@ -26,6 +26,12 @@ AddAppDialog::AddAppDialog(App* app, QWidget* parent)
     ui->auto_launch_checkbox->setChecked(app->auto_start_);
     ui->detached_checkbox->setChecked(app->detach_on_exit_);
     ui->update_checkbox->setChecked(app->auto_check_updates_);
+
+    QString args = app_->Arguments().join(" ");
+    ui->arguments_edit->setText(args);
+  } else {
+    ui->arguments_edit->hide();
+    ui->arguments_label->hide();
   }
 }
 
@@ -102,6 +108,9 @@ void AddAppDialog::accept()
     app_->detach_on_exit_ = ui->detached_checkbox->isChecked();
     app_->auto_check_updates_ = ui->update_checkbox->isChecked();
     app_->auto_start_ = ui->auto_launch_checkbox->isChecked();
+
+    QStringList args = ui->arguments_edit->text().split(" ");
+    app_->SetArguments(args);
   }
 
   QDialog::accept();
