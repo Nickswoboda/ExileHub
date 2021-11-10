@@ -19,7 +19,6 @@ private:
   AutoUpdater auto_updater_;
 
 private slots:
-  void OnUpdateAvailable(int asset_id);
   void OnUpdateComplete(const QString& executable, const QStringList args,
                         bool detached);
   void CheckForNewAppUpdates();

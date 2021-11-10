@@ -38,7 +38,6 @@ private slots:
   void TestDownloadingRelease()
   {
     AutoUpdater auto_updater;
-    auto_updater.DownloadRelease(asset_id_);
 
     QSignalSpy spy(
         &auto_updater,

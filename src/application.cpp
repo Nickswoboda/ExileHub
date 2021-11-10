@@ -40,16 +40,6 @@ Application::Application(int& argc, char** argv)
   }
 }
 
-void Application::OnUpdateAvailable(int asset_id)
-{
-  auto result = QMessageBox::question(
-      &main_window_, "Update Available",
-      "A new update is available. Would you like to download it?");
-  if (result == QMessageBox::Yes) {
-    auto_updater_.DownloadRelease(asset_id);
-  }
-}
-
 void Application::OnUpdateComplete(const QString& executable,
                                    const QStringList args, bool detached)
 {

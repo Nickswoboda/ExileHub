@@ -8,9 +8,7 @@ class AutoUpdater : public QObject
   Q_OBJECT
 
 public:
-  AutoUpdater();
   void CheckForNewRelease(const QString& current_version);
-  void DownloadRelease(int asset_id);
 
 signals:
 
@@ -23,6 +21,5 @@ private:
   QNetworkAccessManager network_manager_;
 
 private slots:
-  void CheckLatestRelease();
-  void ExtractAssetZipData();
+  void ExtractAssetZipData(const QString& path);
 };
